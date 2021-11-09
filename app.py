@@ -1,22 +1,27 @@
-#import win32gui
-import pyautogui as ag
-import pygetwindow as gw
+# Python 3 server example
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import time
+from routes.minecraft import routes
 
-#window = win32gui.FindWindow("Notepad", None)
-#win32gui.SetForegroundWindow(window)
+hostName = "0.0.0.0"
+serverPort = 9999
 
-#ag.typewrite(["a"])
+class MyServer(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        route_content = routes[self.path]
+        return bytes(route_content, "UTF-8")
 
-cmd_window = gw.getWindowsWithTitle("Command Prompt")[0]
-np_window = gw.getWindowsWithTitle("Untitled")[0]
-# print(notepad_window)
-#notepad_window.resizeTo(200, 300)
-if cmd_window.isMinimized == False:
-  cmd_window.minimize()
-else:
-  cmd_window.restore()
-ag.hotkey("ctrl", "a")
-ag.hotkey("ctrl", "c")
-cmd_window.minimize()
-np_window.restore()
-ag.hotkey("ctrl", "v")
+if __name__ == "__main__":        
+    webServer = HTTPServer((hostName, serverPort), MyServer)
+    print("Server started http://%s:%s" % (hostName, serverPort))
+
+    try:
+        webServer.serve_forever()
+    except KeyboardInterrupt:
+        pass
+
+    webServer.server_close()
+    print("Server stopped.")
