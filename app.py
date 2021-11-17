@@ -1,20 +1,34 @@
-from flask import Flask
-from routes.minecraft import check, normalize, closeGame
+from flask import Flask, jsonify
+from flask_cors import CORS
+from routes.minecraft import check, closeGame, get_players, launch
+import pyautogui as ag
+import pygetwindow as gw
 
 app = Flask(__name__)
+CORS(app)
+
+def normalize():
+  get_windows = gw.getAllWindows()
+  for window in get_windows:
+    window.minimize()
+
 
 @app.route("/")
 def startGame():
-  normalize()
-  return "<p>Starting game</p>"
+  #returnval = normalize()
+  print("got here")
+  returnval = launch()
+  return jsonify(status=returnval)
 @app.route("/close")
 def close():
   returnval = closeGame()
-  return returnval
+  return jsonify(status=returnval)
 @app.route("/check")
 def check_status():
-  returnval = check()
-  return returnval
+  return jsonify(
+    online_status=check(),
+    player_count=get_players()
+  )
 
 
 
@@ -22,5 +36,5 @@ if __name__ == "__main__":
     from waitress import serve
     host = "0.0.0.0"
     port = 8080
-    serve(app, host=host, port=port)
     print("Running server on ", host, port)
+    serve(app, host=host, port=port)

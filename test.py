@@ -2,6 +2,7 @@ import pyautogui as ag
 import pygetwindow as gw
 import os, winshell, win32com.client, pythoncom, sys
 from subprocess import Popen, CREATE_NEW_CONSOLE
+from tkinter import Tk
 
 #clean env
 def clean():
@@ -17,23 +18,22 @@ def normalize(game_server):
     launch = input("Game server not running. Would you like to launch? Enter 'y' or 'n' ")
     if launch == "y":
       print("this prints")
-      os.startfile("minecraft.bat", 'open') # THIS LINE DOESN'T FUCKING WORK WHY
+      os.startfile("minecraft.bat", 'open')
       print("so does this")
-      #f = open(file_to_launch, 'r') THIS LINE WORKS
-      #print(f.read()) THIS LINE WORKS
-
-cwd = os.getcwd()
-# print(cwd)
-shortcut_path = os.path.join(cwd, "demoshortcut.lnk")
 target = os.path.abspath("C:/MinecraftServer/eula.txt")
+game_server = gw.getWindowsWithTitle("Minecraft server")[0]
+game_server.activate()
+ag.moveTo((game_server.left + (game_server.width / 2)), (game_server.top + (game_server.height - 20)))
+ag.click()
+ag.typewrite("/list\n")
 
-shell = win32com.client.Dispatch("WScript.Shell")
-shortcut = shell.CreateShortCut(shortcut_path)
-shortcut.Targetpath = target
-shortcut.save()
+ag.move(0, -45)
+ag.tripleClick()
+ag.hotkey("ctrl", "c")
 
-
-#normalize("test")
-# os.startfile("demoshortcut.lnk", "open")
-# test = input("aaaa")
-p = Popen(["notepad.exe", "demoshortcut.lnk"], creationflags=CREATE_NEW_CONSOLE)
+clipboard = Tk()
+clipboard.withdraw()
+val = clipboard.clipboard_get()
+num_players = val.split(" ")[4]
+print(val)
+print(num_players)
