@@ -1,40 +1,19 @@
-import os
 import pyautogui as ag
 import pygetwindow as gw
-from tkinter import Tk
+import os
+import glob
 import time
-routes = {
-  "/" : "Play Minecraft",
-  "/goodbye" : "Stop playing minecraft"
-}
 
-def closeGame():
+def mine_check_online():
   try:
     game_server = gw.getWindowsWithTitle("Minecraft server")[0]
-    game_server.close()
-  except:
-    return "server offline"
-  else:
-    return "closing server"
-
-def launch():
-  try:
-    game_server = gw.getWindowsWithTitle("Minecraft server")[0]
-  except:
-    os.startfile("minecraft.bat", 'open')
-    return "starting server"
-  else:
-    return "server online"
-    
-def check():
-  try:
-    game_server = gw.getWindowsWithTitle("Minecraft server")[0]
-  except:
+  except: 
+    #os.startfile("minecraft.bat", 'open')
     return "offline"
   else:
     return "online"
 
-def get_players():
+def mine_check_players():
   try:
     game_server = gw.getWindowsWithTitle("Minecraft server")[0]
   except:
@@ -45,16 +24,37 @@ def get_players():
     game_server.restore()
     game_server.activate()
     ag.moveTo((game_server.left + (game_server.width / 2)), (game_server.top + (game_server.height - 20)))
-    ag.click()
-    ag.typewrite("/list\n")
-
-    ag.move(0, -45)
     time.sleep(1)
-    ag.tripleClick()
-    ag.hotkey("ctrl", "c")
+    ag.click()
+    time.sleep(1)
+    ag.typewrite("/list\n")
+    game_server.minimize()
+    folder_path = r'C:\Users\jared\OneDrive\Desktop\personalsite\game-test\logs'
+    file_type = '\*log'
+    files = glob.glob(folder_path + file_type)
+    latest_file = max(files, key=os.path.getctime)
 
-    clipboard = Tk()
-    clipboard.withdraw()
-    val = clipboard.clipboard_get()
-    num_players = val.split(" ")[4]
-    return num_players
+    content = open(latest_file)
+    last_line = content.readlines()[-1]
+    if last_line[44] == " ":
+      return last_line[43]
+    else:
+      return last_line[43] + last_line[44]
+    
+def mine_close_game():
+  try:
+    game_server = gw.getWindowsWithTitle("Minecraft server")[0]
+    game_server.close()
+  except:
+    return "offline"
+  else:
+    return "shutting down.."
+
+def mine_launch():
+  try:
+    game_server = gw.getWindowsWithTitle("Minecraft server")[0]
+  except:
+    os.startfile("minecraft.bat", 'open')
+    return "starting.."
+  else:
+    return "online"
