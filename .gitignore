@@ -4,3 +4,5 @@ routes/__pycache__
 test.py
 .env
 logs
+certs
+old
