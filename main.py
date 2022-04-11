@@ -1,13 +1,32 @@
+from urllib.parse import _DefragResultBase
+from xmlrpc.client import DateTime
 from flask import Flask
 from threading import Timer
 from time import sleep
 from serv import *
 import pywinctl as wc
 import pyautogui as ag
+import socket, errno
+import datetime
 
 app = Flask(__name__)
 active_server = ""
 player_count = 0
+delay = False
+delay_time = datetime.datetime.now()
+print(delay_time)
+player_count = 0
+
+def checktime():
+  global delay
+  check_time = datetime.datetime.now()
+  difference = check_time.minute + (check_time.hour * 60) - (delay_time.minute + (delay_time.hour * 60))
+  if difference >= 10:
+    delay = False
+  else:
+    delay = True
+
+
 
 class RepeatedTimer(object):
   def __init__(self, interval, function):
@@ -32,33 +51,49 @@ class RepeatedTimer(object):
       self.is_running = False
 
 def update_status():
+  checktime()
+  
   global active_server
   active_server = ""
   for game in game_list:
-    try:
-      is_active = wc.getWindowsWithTitle(game.name)[0]
-    except:
-      pass
-    else:
-      active_server = game.name
+      try:
+        is_active = wc.getWindowsWithTitle(game.name)[0]
+      except:
+        pass
+      else:
+        active_server = game.name
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if not delay:
+          try:
+            s.bind(("127.0.0.1", int(game.port)))
+          except:
+            print("Port unavailable")
+          else:
+            print("port not in use, but game open. closing..")
+            is_active.activate()
+            sleep(1)
+            ag.hotkey("alt", "f4")
+
+          s.close()
+
       file = open(game.log_file, 'r')
       for line in file:
         connected_players = []
         online = 0
-        if line.__contains__('connected'):
+        if 'connected' in line:
           #code to parse username here
           online += 1
         elif line.__contains__('disconnected'):
           #code to parse username here
           online -= 1
         player_count = online
-      print(f"Active sever is {active_server}")
-      print(f'Online players: {player_count}')
+  print(f"Active sever is {active_server}")
+  #print(f'Online players: {player_count}')
 
 
 
 
-rt = RepeatedTimer(3, update_status)
+rt = RepeatedTimer(60, update_status)
 try:
   sleep(1)
   @app.route('/')
@@ -69,22 +104,23 @@ try:
     return 0
   @app.route('/minecraft/start')
   def start_mine():
-    minecraft_serv.launch()
-    return("Starting..")
+    returnval = minecraft_serv.launch()
+    return returnval
   @app.route('/minecraft/stop')
   def stop_mine():
-    return 0
+    returnval = minecraft_serv.exec_cmd("stop")
+    return returnval
   @app.route('/valheim')
   def val_stats():
     return 0
   @app.route('/valheim/start')
   def start_val():
-    val_serv.launch()
-    sleep(30)
-    return("Starting..")
+    returnval = val_serv.launch()
+    return returnval
   @app.route('/valheim/stop')
   def stop_val():
-    return 0
+    returnval = val_serv.exec_cmd("stop")
+    return returnval
 
 
 
