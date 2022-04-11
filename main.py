@@ -1,6 +1,7 @@
 from urllib.parse import _DefragResultBase
 from xmlrpc.client import DateTime
 from flask import Flask
+from flask_cors import CORS
 from threading import Timer
 from time import sleep
 from serv import *
@@ -11,6 +12,7 @@ import datetime
 import json
 
 app = Flask(__name__)
+CORS(app)
 active_server = ""
 player_count = 0
 delay = False
