@@ -106,6 +106,9 @@ try:
   def home():
     return "No. Go away."
   @app.route('/minecraft')
+  def serv_stats():
+    return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": "0"})
+  @app.route('/minecraft')
   def mine_stats():
     return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": "0"})
   @app.route('/minecraft/start')
