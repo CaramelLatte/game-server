@@ -26,7 +26,7 @@ def checktime():
     delay = False
   else:
     #delay = True
-    pass
+    return
 
 
 
