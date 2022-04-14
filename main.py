@@ -97,6 +97,7 @@ def update_status():
     print(f'Online players: {player_count}')
   else:
     print("No active server.")
+    player_count = 0
 
 
 
