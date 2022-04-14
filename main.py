@@ -89,15 +89,15 @@ def update_status():
             parsed_name = line[game.log_file["splice_start"]:].strip("\n").replace(game.log_file["connect"], "").replace(" ", "")
             if not parsed_name in connected_players:
               connected_players.append(parsed_name)
-              player_count += 1
+              #player_count += 1
           elif game.log_file["disconnect"] in line:
             parsed_name = line[33:]
             connected_players.remove(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
-            player_count -= 1
+            #player_count -= 1
   print(f"The following players are connected: \n{connected_players}")
   if active_server != "":
     print(f"Active sever is {active_server}")
-    print(f'Online players: {player_count}')
+    print(f'Online players: {len(connected_players())}')
     connected_players = []
   else:
     print("No active server.")
