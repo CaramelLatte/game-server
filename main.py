@@ -16,6 +16,7 @@ player_count = 0
 delay = False
 delay_time = datetime.datetime.now()
 player_count = 0
+connected_players = []
 
 def checktime():
   global delay
