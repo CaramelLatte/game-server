@@ -119,7 +119,7 @@ try:
   def start_mine():
     global delay
     global delay_time
-    if not delay:
+    if delay == False:
       returnval = minecraft_serv.launch()
       #delay = True
       delay_time = datetime.datetime.now()
