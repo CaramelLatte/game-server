@@ -44,7 +44,7 @@ class GameServer:
     return command
 
 game_list = []
-minecraft_serv = GameServer("minecraft", "25565", "/home/pi/minecraft/", "/home/pi/minecraft/logs/latest.log", {"launch": "java -Xmx5G -Xms5G -jar server.jar nogui \n", "stop": "/stop\n"})
+minecraft_serv = GameServer("minecraft", "25565", "/home/pi/minecraft/", "/home/pi/minecraft/logs/latest.log", {"launch": "java -Xmx6G -Xms6G -jar server.jar nogui \n", "stop": "/stop\n"})
 val_serv = GameServer("valheim", "2456", "/home/pi/valheim_server/", "/home/pi/valheim_server/valheim_log.txt", {"launch": "./start_server.sh", "stop": "ctrl,c"})
 game_list.append(minecraft_serv)
 game_list.append(val_serv)

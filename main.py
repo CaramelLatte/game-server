@@ -1,5 +1,3 @@
-from urllib.parse import _DefragResultBase
-from xmlrpc.client import DateTime
 from flask import Flask
 from flask_cors import CORS
 from threading import Timer
@@ -17,7 +15,6 @@ active_server = ""
 player_count = 0
 delay = False
 delay_time = datetime.datetime.now()
-print(delay_time)
 player_count = 0
 
 def checktime():
@@ -99,13 +96,13 @@ def update_status():
 
 
 
-rt = RepeatedTimer(30, update_status)
+rt = RepeatedTimer(60, update_status)
 try:
   sleep(1)
   @app.route('/')
   def home():
     return "No. Go away."
-  @app.route('/minecraft')
+  @app.route('/update')
   def serv_stats():
     return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": "0"})
   @app.route('/minecraft')
@@ -113,11 +110,19 @@ try:
     return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": "0"})
   @app.route('/minecraft/start')
   def start_mine():
-    returnval = minecraft_serv.launch()
-    return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
-
+    global delay
+    global delay_time
+    if not delay:
+      returnval = minecraft_serv.launch()
+      delay = True
+      delay_time = datetime.datetime.now()
+      return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
+    else:
+      return("Server is leased. Please try again in a few minutes.")
   @app.route('/minecraft/stop')
   def stop_mine():
+    global delay
+    delay = False
     returnval = minecraft_serv.exec_cmd("stop")
     return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
   @app.route('/valheim')
@@ -125,10 +130,19 @@ try:
     return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": "0"})
   @app.route('/valheim/start')
   def start_val():
-    returnval = val_serv.launch()
-    return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
+    global delay
+    global delay_time
+    if not delay:
+      delay_time=datetime.datetime.now()
+      delay = True
+      returnval = val_serv.launch()
+      return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
+    else:
+      return("Server is leased. Please try again in a few minutes.")
   @app.route('/valheim/stop')
   def stop_val():
+    global delay
+    delay = False
     returnval = val_serv.exec_cmd("stop")
     return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
 
