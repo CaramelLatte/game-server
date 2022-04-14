@@ -52,7 +52,7 @@ class RepeatedTimer(object):
 
 def update_status():
   checktime()
-  
+  global connected_players
   global active_server
   global player_count
   active_server = ""
@@ -76,22 +76,30 @@ def update_status():
             ag.hotkey("alt", "f4")
           s.close()
         active_server = game.name
-      file = open(game.log_file, 'r')
+      file = open(game.log_file["file"], 'r')
+
       for line in file:
-        connected_players = []
-        online = 0
-        if 'connected' in line:
-          #code to parse username here
-          online += 1
-        elif line.__contains__('disconnected'):
-          #code to parse username here
-          online -= 1
-        player_count = online
+        
+        if game.log_file["connect"] in line:
+          #print(line[int(game.log_file["splice_start"]), len(line) - int(game.log_file["splice_start"])])
+          parsed_name = line[game.log_file["splice_start"]:]
+          print(parsed_name)
+          
+          connected_players.append(parsed_name.strip("\n").replace(game.log_file["connect"], "").replace(" ", ""))
+          print(connected_players)
+          player_count += 1
+        elif game.log_file["disconnect"] in line:
+          parsed_name = line[33:]
+          connected_players.remove(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
+          print(connected_players)
+          player_count -= 1
+  print(f"{player_count} players online")
   if active_server != "":
     print(f"Active sever is {active_server}")
     print(f'Online players: {player_count}')
   else:
     print("No active server.")
+
 
 
 

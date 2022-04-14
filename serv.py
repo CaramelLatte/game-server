@@ -14,7 +14,6 @@ class GameServer:
 
   def launch(self):
     try:
-      print("got here")
       server = wc.getWindowsWithTitle(self.name)[-1]
     except:
       subprocess.call(["lxterminal", "-t", self.name])
@@ -44,7 +43,7 @@ class GameServer:
     return command
 
 game_list = []
-minecraft_serv = GameServer("minecraft", "25565", "/home/pi/minecraft/", "/home/pi/minecraft/logs/latest.log", {"launch": "java -Xmx6G -Xms6G -jar server.jar nogui \n", "stop": "/stop\n"})
-val_serv = GameServer("valheim", "2456", "/home/pi/valheim_server/", "/home/pi/valheim_server/valheim_log.txt", {"launch": "./start_server.sh", "stop": "ctrl,c"})
+minecraft_serv = GameServer("minecraft", "25565", "/home/pi/minecraft/", {"file": "/home/pi/minecraft/logs/latest.log",  "connect": "joined the game", "disconnect": "left the game", "splice_start": 33, "splice_stop": 0}, {"launch": "java -Xmx5G -Xms5G -jar server.jar nogui \n", "stop": "/stop\n"})
+val_serv = GameServer("valheim", "2456", "/home/pi/valheim_server/", {"/home/pi/valheim_server/valheim_log.txt"}, {"launch": "./start_server.sh", "stop": "ctrl,c"})
 game_list.append(minecraft_serv)
-game_list.append(val_serv)
+#game_list.append(val_serv)
