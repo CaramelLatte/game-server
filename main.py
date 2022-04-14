@@ -117,10 +117,10 @@ try:
     return "No. Go away."
   @app.route('/update')
   def serv_stats():
-    return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": "0"})
+    return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": "0"})
   @app.route('/minecraft')
   def mine_stats():
-    return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": "0"})
+    return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": "0"})
   @app.route('/minecraft/start')
   def start_mine():
     global delay
@@ -129,7 +129,7 @@ try:
       delay = True
       delay_time = datetime.datetime.now()
       returnval = minecraft_serv.launch()
-      return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
+      return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
     else:
       return("Server is leased. Please try again in a few minutes.")
   @app.route('/minecraft/stop')
@@ -138,10 +138,10 @@ try:
     delay = False
     returnval = minecraft_serv.exec_cmd("stop")
     active_server = ""
-    return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
+    return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
   @app.route('/valheim')
   def val_stats():
-    return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": "0"})
+    return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": "0"})
   @app.route('/valheim/start')
   def start_val():
     global delay
@@ -150,7 +150,7 @@ try:
       delay_time=datetime.datetime.now()
       delay = True
       returnval = val_serv.launch()
-      return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
+      return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
     else:
       return("Server is leased. Please try again in a few minutes.")
   @app.route('/valheim/stop')
@@ -158,7 +158,7 @@ try:
     global delay
     delay = False
     returnval = val_serv.exec_cmd("stop")
-    return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
+    return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
 
 
 
