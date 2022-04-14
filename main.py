@@ -77,6 +77,7 @@ def update_status():
             sleep(1)
             ag.hotkey("alt", "f4")
           s.close()
+          active_server = ""
         active_server = game.name
       
       if active_server == game.name:
@@ -136,6 +137,7 @@ try:
     global delay
     delay = False
     returnval = minecraft_serv.exec_cmd("stop")
+    active_server = ""
     return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
   @app.route('/valheim')
   def val_stats():
