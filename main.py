@@ -61,7 +61,7 @@ def update_status():
       try:
         is_active = wc.getWindowsWithTitle(game.name)[0]
       except:
-        pass
+        continue
       else:
         
         if not delay:
