@@ -83,18 +83,15 @@ def update_status():
         
         if game.log_file["connect"] in line:
           #print(line[int(game.log_file["splice_start"]), len(line) - int(game.log_file["splice_start"])])
-          parsed_name = line[game.log_file["splice_start"]:]
-          print(parsed_name)
-          
-          connected_players.append(parsed_name.strip("\n").replace(game.log_file["connect"], "").replace(" ", ""))
-          print(connected_players)
+          parsed_name = line[game.log_file["splice_start"]:].strip("\n").replace(game.log_file["connect"], "").replace(" ", "")
+          if not parsed_name in connected_players:
+            connected_players.append(parsed_name)
           player_count += 1
         elif game.log_file["disconnect"] in line:
           parsed_name = line[33:]
           connected_players.remove(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
-          print(connected_players)
           player_count -= 1
-  print(f"{player_count} players online")
+  print(f"The following players are connected: \n{connected_players}")
   if active_server != "":
     print(f"Active sever is {active_server}")
     print(f'Online players: {player_count}')
@@ -105,7 +102,7 @@ def update_status():
 
 
 
-rt = RepeatedTimer(60, update_status)
+rt = RepeatedTimer(2, update_status)
 try:
   sleep(1)
   @app.route('/')
