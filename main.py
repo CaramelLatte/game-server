@@ -20,6 +20,7 @@ connected_players = []
 
 def checktime():
   global delay
+  global delay_time
   check_time = datetime.datetime.now()
   difference = check_time.minute + (check_time.hour * 60) - (delay_time.minute + (delay_time.hour * 60))
   if difference >= 10:
@@ -124,9 +125,9 @@ try:
     global delay
     global delay_time
     if not delay:
-      returnval = minecraft_serv.launch()
       delay = True
       delay_time = datetime.datetime.now()
+      returnval = minecraft_serv.launch()
       return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
     else:
       return("Server is leased. Please try again in a few minutes.")
