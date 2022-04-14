@@ -119,13 +119,13 @@ try:
   def start_mine():
     global delay
     global delay_time
-    if delay == False:
-      returnval = minecraft_serv.launch()
-      #delay = True
-      delay_time = datetime.datetime.now()
-      return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
-    else:
-      return("Server is leased. Please try again in a few minutes.")
+    #if delay == False:
+    returnval = minecraft_serv.launch()
+    #delay = True
+    delay_time = datetime.datetime.now()
+    return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
+    # else:
+    #   return("Server is leased. Please try again in a few minutes.")
   @app.route('/minecraft/stop')
   def stop_mine():
     global delay
