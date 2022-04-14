@@ -121,7 +121,7 @@ try:
     global delay_time
     if not delay:
       returnval = minecraft_serv.launch()
-      delay = True
+      #delay = True
       delay_time = datetime.datetime.now()
       return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
     else:
