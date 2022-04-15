@@ -55,6 +55,7 @@ class RepeatedTimer(object):
 
 def update_status():
   checktime()
+  active_server = ""
   global connected_players
   global active_server
   global player_count
