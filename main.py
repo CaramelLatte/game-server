@@ -55,10 +55,11 @@ class RepeatedTimer(object):
 
 def update_status():
   checktime()
-  active_server = ""
+  
   global connected_players
   global active_server
   global player_count
+  active_server = ""
   for game in game_list:
       try:
         is_active = wc.getWindowsWithTitle(game.name)[0]
