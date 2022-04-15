@@ -97,6 +97,7 @@ def update_status():
             print(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
             connected_players.remove(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
             #player_count -= 1
+          file.close()
   print(f"The following players are connected: \n{connected_players}")
   if active_server != "":
     print(f"Active sever is {active_server}")
@@ -110,7 +111,7 @@ def update_status():
 
 
 
-rt = RepeatedTimer(2, update_status)
+rt = RepeatedTimer(60, update_status)
 try:
   sleep(1)
   @app.route('/')
