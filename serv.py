@@ -38,8 +38,8 @@ class GameServer:
       if key in self.cmds[command]:
         hotkey = self.cmds[command].split(",")
         ag.hotkey(hotkey[0], hotkey[1])
-    else:
-      ag.typewrite(self.cmds[command] + "\n")
+      else:
+        ag.typewrite(self.cmds[command] + "\n")
     return command
 
 game_list = []
