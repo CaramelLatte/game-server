@@ -92,7 +92,9 @@ def update_status():
               connected_players.append(parsed_name)
               #player_count += 1
           elif game.log_file["disconnect"] in line:
-            parsed_name = line[33:]
+            parsed_name = line[game.log_file["splice_start"]:]
+            print("this")
+            print(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
             connected_players.remove(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
             #player_count -= 1
   print(f"The following players are connected: \n{connected_players}")
