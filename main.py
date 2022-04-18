@@ -62,7 +62,8 @@ def update_status():
   # active_server = ""
   for game in game_list:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    if s.connect_ex("127.0.0.1", game.port[0]) == 0
+    print(game.name)
+    if s.connect_ex("127.0.0.1", game.port[0]) == 0:
       print("0")
     else:
       print("1")
