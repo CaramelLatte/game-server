@@ -39,8 +39,8 @@ class GameServer:
         print("here")
         hotkey = self.cmds[command].split(",")
         ag.hotkey(hotkey[0], hotkey[1])
-      else:
-        ag.typewrite(self.cmds[command] + "\n")
+        return command
+    ag.typewrite(self.cmds[command] + "\n")
     return command
 
 
