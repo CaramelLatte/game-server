@@ -36,11 +36,13 @@ class GameServer:
     hotkeys = ["ctrl", "shift", "alt"]
     for key in hotkeys:
       if key in self.cmds[command]:
+        print("here")
         hotkey = self.cmds[command].split(",")
         ag.hotkey(hotkey[0], hotkey[1])
       else:
         ag.typewrite(self.cmds[command] + "\n")
     return command
+
 
 game_list = []
 minecraft_serv = GameServer("minecraft", "25565", "/home/pi/minecraft/", {"file": "/home/pi/minecraft/logs/latest.log",  "connect": "joined the game", "disconnect": "left the game", "splice_start": 33}, {"launch": "java -Xmx5G -Xms5G -jar server.jar nogui \n", "stop": "/stop\n"})
