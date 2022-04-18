@@ -5,7 +5,7 @@ from time import sleep
 from serv import *
 import pywinctl as wc
 import pyautogui as ag
-import socket, errno
+import socket
 import datetime
 import json
 
@@ -102,10 +102,6 @@ def update_status():
   else:
     print(f"{datetime.datetime.now()}: No active server.")
     player_count = 0
-
-
-
-
 
 
 rt = RepeatedTimer(60, update_status)
