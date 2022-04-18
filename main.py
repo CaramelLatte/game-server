@@ -63,7 +63,7 @@ def update_status():
   for game in game_list:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print(game.name)
-    address = "127.0.0.1" + game.port[0]
+    address = "127.0.0.1" + str(game.port[0])
     if s.connect_ex(address) == 0:
       print("0")
     else:
