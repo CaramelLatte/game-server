@@ -76,7 +76,7 @@ def update_status():
             active_server = game.name
 
           else:
-            print("port not in use, but game open. closing..")
+            print(f"{game.name} port {game.port} not in use, but window open. closing..")
             is_active.activate()
             sleep(1)
             ag.hotkey("alt", "f4")
