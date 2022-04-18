@@ -23,7 +23,7 @@ def checktime():
   global delay_time
   check_time = datetime.datetime.now()
   difference = check_time.minute + (check_time.hour * 60) - (delay_time.minute + (delay_time.hour * 60))
-  if difference >= 10:
+  if difference >= 2:
     delay = False
   else:
     #delay = True
@@ -59,32 +59,38 @@ def update_status():
   global connected_players
   global active_server
   global player_count
-  active_server = ""
+  # active_server = ""
   for game in game_list:
-      try:
-        is_active = wc.getWindowsWithTitle(game.name)[0]
-        print(f"searchin for empty {game.name} windows")
-      except:
-        print(f'{game.name} not running')
-      else:
-        if not delay:
-          s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-          port_occupied = False
-          for port in game.port:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+      s.bind("127.0.0.1", game.port[0])
+    except:
+      print(f'{game.name} got here checking {game.port[0]}')
 
-            try:
-              print(f"trying {game.name} port {port}")
-              s.bind(("127.0.0.1", int(game.port)))
-            except:
-              print(f"Server port occupied.")
-              port_occupied = True
-              active_server = game.name
-          if port_occupied == False:
-            print(f"{game.name} port {game.port} not in use, but window open. closing..")
-            is_active.activate()
-            sleep(1)
-            ag.hotkey("alt", "f4")
-          s.close()
+      # try:
+      #   is_active = wc.getWindowsWithTitle(game.name)[0]
+      #   print(f"searchin for empty {game.name} windows")
+      # except:
+      #   print(f'{game.name} not running')
+      # else:
+      #   if not delay:
+      #     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      #     port_occupied = False
+      #     for port in game.port:
+
+      #       try:
+      #         print(f"trying {game.name} port {port}")
+      #         s.bind(("127.0.0.1", int(game.port)))
+      #       except:
+      #         print(f"Server port occupied.")
+      #         port_occupied = True
+      #         active_server = game.name
+      #     if port_occupied == False:
+      #       print(f"{game.name} port {game.port} not in use, but window open. closing..")
+      #       is_active.activate()
+      #       sleep(1)
+      #       ag.hotkey("alt", "f4")
+      #     s.close()
            
       if active_server == game.name:
         file = open(game.log_file["file"], 'r')
@@ -108,7 +114,7 @@ def update_status():
     player_count = 0
 
 
-rt = RepeatedTimer(60, update_status)
+rt = RepeatedTimer(10, update_status)
 try:
   sleep(1)
   @app.route('/')
