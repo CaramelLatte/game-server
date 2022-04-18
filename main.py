@@ -69,13 +69,17 @@ def update_status():
       else:
         if not delay:
           s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-          try:
-            s.bind(("127.0.0.1", int(game.port)))
-          except:
-            #print(f"Server port occupied.")
-            active_server = game.name
+          port_occupied = False
+          for port in game.port:
 
-          else:
+            try:
+              print(f"trying {game.name} port {port}")
+              s.bind(("127.0.0.1", int(game.port)))
+            except:
+              print(f"Server port occupied.")
+              port_occupied = True
+              active_server = game.name
+          if port_occupied == False:
             print(f"{game.name} port {game.port} not in use, but window open. closing..")
             is_active.activate()
             sleep(1)
