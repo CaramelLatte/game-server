@@ -99,21 +99,21 @@ def update_status():
       #       ag.hotkey("alt", "f4")
       #     s.close()
            
-      if active_server == game.name:
-        file = open(game.log_file["file"], 'r')
+      # if active_server == game.name:
+      #   file = open(game.log_file["file"], 'r')
 
-        for line in file:
+      #   for line in file:
           
-          if game.log_file["connect"] in line:
-            parsed_name = line[game.log_file["splice_start"]:].strip("\n").replace(game.log_file["connect"], "").replace(" ", "")
-            if not parsed_name in connected_players:
-              connected_players.append(parsed_name)
+      #     if game.log_file["connect"] in line:
+      #       parsed_name = line[game.log_file["splice_start"]:].strip("\n").replace(game.log_file["connect"], "").replace(" ", "")
+      #       if not parsed_name in connected_players:
+      #         connected_players.append(parsed_name)
               
-          elif game.log_file["disconnect"] in line:
-            parsed_name = line[game.log_file["splice_start"]:]
-            print(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
-            connected_players.remove(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
-        file.close()
+      #     elif game.log_file["disconnect"] in line:
+      #       parsed_name = line[game.log_file["splice_start"]:]
+      #       print(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
+      #       connected_players.remove(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
+      #   file.close()
   if active_server != "":
     print(f'{datetime.datetime.now()}: Active sever is {active_server}\nOnline players: {len(connected_players)}: {connected_players}')
   else:
