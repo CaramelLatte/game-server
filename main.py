@@ -61,13 +61,18 @@ def update_status():
   global player_count
   # active_server = ""
   for game in game_list:
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print(game.name)
-    address = "127.0.0.1" + str(game.port[0])
-    if s.connect_ex(address) == 0:
-      print("0")
-    else:
-      print("1")
+  
+    host = "127.0.0.1"
+    port = game.port[0]
+
+    # try to connect to a bind shell
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((host, port))
+        print(f"Port {port} is open")
+        s.close()
+    except socket.error:
+        print(f"Port {port} closed.")
 
       # try:
       #   is_active = wc.getWindowsWithTitle(game.name)[0]
