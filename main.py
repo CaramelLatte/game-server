@@ -76,8 +76,8 @@ def update_status():
               s.bind(("127.0.0.1", int(game.port)))
             except:
               print("Port unavailable")
-          else:
-            print("port not in use, but game open. closing..")
+            else:
+              print("port not in use, but game open. closing..")
           #   is_active.activate()
           #   sleep(1)
           #   ag.hotkey("alt", "f4")
