@@ -63,6 +63,7 @@ def update_status():
   for game in game_list:
       try:
         is_active = wc.getWindowsWithTitle(game.name)[0]
+        print(f"searchin for empty {game.name} windows")
       except:
         print(f'{game.name} not running')
       else:
