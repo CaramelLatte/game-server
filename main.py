@@ -62,10 +62,10 @@ def update_status():
   # active_server = ""
   for game in game_list:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-      s.bind("127.0.0.1", game.port[0])
-    except:
-      print(f'{game.name} got here checking {game.port[0]}')
+    if s.connect_ex("127.0.0.1", game.port[0]) == 0
+      print("0")
+    else:
+      print("1")
 
       # try:
       #   is_active = wc.getWindowsWithTitle(game.name)[0]
