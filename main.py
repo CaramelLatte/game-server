@@ -133,6 +133,7 @@ try:
       return("Server is leased. Please try again in a few minutes.")
   @app.route('/minecraft/stop')
   def stop_mine():
+    global active_server
     global delay
     if active_server == "minecraft":
       delay = False
@@ -159,6 +160,7 @@ try:
   @app.route('/valheim/stop')
   def stop_val():
     global delay
+    global active_server
     if active_server == "valheim":
       delay = False
       returnval = minecraft_serv.exec_cmd("stop")
