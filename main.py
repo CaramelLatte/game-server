@@ -23,7 +23,7 @@ def checktime():
   global delay_time
   check_time = datetime.datetime.now()
   difference = check_time.minute + (check_time.hour * 60) - (delay_time.minute + (delay_time.hour * 60))
-  if difference >= 2:
+  if difference >= 4:
     delay = False
   else:
     #delay = True
