@@ -70,14 +70,14 @@ def update_status():
         
         if not delay:
           s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-          try:
-            for port in game.port:
-              
+          for port in game.port:
+            try:
+              print(f"trying {port}")
               s.bind(("127.0.0.1", int(game.port)))
-          except:
-            print("Port unavailable")
-          # else:
-          #   print("port not in use, but game open. closing..")
+            except:
+              print("Port unavailable")
+          else:
+            print("port not in use, but game open. closing..")
           #   is_active.activate()
           #   sleep(1)
           #   ag.hotkey("alt", "f4")
