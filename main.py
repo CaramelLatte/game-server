@@ -67,7 +67,8 @@ def update_status():
       except:
         print(f'{game.name} not running')
       else:
-        
+        active_server = game.name
+
         if not delay:
           s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
           for port in game.port:
@@ -78,13 +79,11 @@ def update_status():
               print("Port unavailable")
             else:
               print("port not in use, but game open. closing..")
-          #   is_active.activate()
-          #   sleep(1)
-          #   ag.hotkey("alt", "f4")
+              is_active.activate()
+              sleep(1)
+              ag.hotkey("alt", "f4")
           s.close()
-          active_server = ""
-        active_server = game.name
-      
+          active_server = ""      
       if active_server == game.name:
         file = open(game.log_file["file"], 'r')
 
