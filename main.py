@@ -134,10 +134,14 @@ try:
   @app.route('/minecraft/stop')
   def stop_mine():
     global delay
-    delay = False
-    returnval = minecraft_serv.exec_cmd("stop")
-    active_server = ""
-    return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
+    if active_server == "minecraft":
+      delay = False
+      returnval = minecraft_serv.exec_cmd("stop")
+      active_server = ""
+      return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
+    else:
+        return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": "minecraft not open"})
+
   @app.route('/valheim')
   def val_stats():
     return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": "0"})
@@ -155,9 +159,13 @@ try:
   @app.route('/valheim/stop')
   def stop_val():
     global delay
-    delay = False
-    returnval = val_serv.exec_cmd("stop")
-    return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
+    if active_server == "valheim":
+      delay = False
+      returnval = minecraft_serv.exec_cmd("stop")
+      active_server = ""
+      return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
+    else:
+        return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": "valheim not open"})
 
 
 
