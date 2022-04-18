@@ -23,7 +23,7 @@ def checktime():
   global delay_time
   check_time = datetime.datetime.now()
   difference = check_time.minute + (check_time.hour * 60) - (delay_time.minute + (delay_time.hour * 60))
-  if difference >= 10:
+  if difference >= 2:
     delay = False
   else:
     #delay = True
@@ -64,7 +64,7 @@ def update_status():
       try:
         is_active = wc.getWindowsWithTitle(game.name)[0]
       except:
-        continue
+        print(f'{game.name} not running')
       else:
         
         if not delay:
