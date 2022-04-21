@@ -36,11 +36,11 @@ def checkports():
   
     host = "127.0.0.1"
     port = game.port
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     for port in game.port:
 
       try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.bind(("127.0.0.1", int(port)))
         s.close()
 
