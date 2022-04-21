@@ -45,6 +45,7 @@ def checkports():
           s.close()
       except socket.error:
           print(f"{game.name} port {port} closed.")
+          s.close()
 
 
 
