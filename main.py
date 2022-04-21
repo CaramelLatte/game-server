@@ -5,7 +5,6 @@ from time import sleep
 from serv import *
 import pywinctl as wc
 import pyautogui as ag
-import socket, errno
 import datetime
 import json
 
@@ -14,6 +13,7 @@ CORS(app)
 active_server = ""
 player_count = 0
 delay = False
+hosting = False
 delay_time = datetime.datetime.now()
 player_count = 0
 connected_players = []
@@ -23,38 +23,10 @@ def checktime():
   global delay_time
   check_time = datetime.datetime.now()
   difference = check_time.minute + (check_time.hour * 60) - (delay_time.minute + (delay_time.hour * 60))
-  if difference >= 2:
+  if difference >= 10:
     delay = False
   else:
-    #delay = True
     return
-def checkports():
-  global delay
-  global delay_time
-  # active_server = ""
-  for game in game_list:
-  
-    host = "127.0.0.1"
-    port = game.port
-
-    for port in game.port:
-
-      try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((host, int(port)))
-        
-      except socket.error as e:
-        if e.errno == errno.EADDRINUSE:
-          print(f"{game.name} port {port} is already in use")
-        else:
-          # something else raised the socket.error exception
-          print(e)
-          s.close()
-
-      else:
-        print(f"Port {port} is open")
-        s.close()
-      
 
 
     
@@ -82,68 +54,46 @@ class RepeatedTimer(object):
       self._timer.cancel()
       self.is_running = False
 
+def clean_windows():
+  for game in game_list:
+    try:
+      open_windows = wc.getWindowsWithTitle(game.name)
+    except:
+      pass
+    else:
+      while len(open_windows) > 0:
+        open_windows[-1].close()
+        
 def update_status():
   checktime()
-  checkports()
-  
+
   global connected_players
   global active_server
   global player_count
-  # active_server = ""
-  # for game in game_list:
-  
-  #   host = "127.0.0.1"
-  #   port = game.port[0]
-  #   for port in game.port:
-
-  #     try:
-  #         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  #         s.connect((host, port))
-  #         print(f"Port {port} is open")
-  #         s.close()
-  #     except socket.error:
-  #         print(f"Port {port} closed.")
-
-      # try:
-      #   is_active = wc.getWindowsWithTitle(game.name)[0]
-      #   print(f"searchin for empty {game.name} windows")
-      # except:
-      #   print(f'{game.name} not running')
-      # else:
-      #   if not delay:
-      #     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-      #     port_occupied = False
-      #     for port in game.port:
-
-      #       try:
-      #         print(f"trying {game.name} port {port}")
-      #         s.bind(("127.0.0.1", int(game.port)))
-      #       except:
-      #         print(f"Server port occupied.")
-      #         port_occupied = True
-      #         active_server = game.name
-      #     if port_occupied == False:
-      #       print(f"{game.name} port {game.port} not in use, but window open. closing..")
-      #       is_active.activate()
-      #       sleep(1)
-      #       ag.hotkey("alt", "f4")
-      #     s.close()
-           
-      # if active_server == game.name:
-      #   file = open(game.log_file["file"], 'r')
-
-      #   for line in file:
+  active_server = ""
+  for game in game_list:
+    try:
+      server = wc.getWindowsWithTitle(game.name)[0]
+    except:
+      pass
+    else:
+      active_server = game.name
           
-      #     if game.log_file["connect"] in line:
-      #       parsed_name = line[game.log_file["splice_start"]:].strip("\n").replace(game.log_file["connect"], "").replace(" ", "")
-      #       if not parsed_name in connected_players:
-      #         connected_players.append(parsed_name)
-              
-      #     elif game.log_file["disconnect"] in line:
-      #       parsed_name = line[game.log_file["splice_start"]:]
-      #       print(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
-      #       connected_players.remove(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
-      #   file.close()
+    if active_server == game.name:
+      file = open(game.log_file["file"], 'r')
+
+      for line in file:
+        
+        if game.log_file["connect"] in line:
+          parsed_name = line[game.log_file["splice_start"]:].strip("\n").replace(game.log_file["connect"], "").replace(" ", "")
+          if not parsed_name in connected_players:
+            connected_players.append(parsed_name)
+            
+        elif game.log_file["disconnect"] in line:
+          parsed_name = line[game.log_file["splice_start"]:]
+          print(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
+          connected_players.remove(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
+      file.close()
   if active_server != "":
     print(f'{datetime.datetime.now()}: Active sever is {active_server}\nOnline players: {len(connected_players)}: {connected_players}')
   else:
@@ -170,6 +120,7 @@ try:
     if not delay:
       delay = True
       delay_time = datetime.datetime.now()
+      clean_windows()
       returnval = minecraft_serv.launch()
       return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
     else:
@@ -193,6 +144,7 @@ try:
   def start_val():
     global delay
     global delay_time
+    #clean_windows()
     if not delay:
       delay_time=datetime.datetime.now()
       delay = True
