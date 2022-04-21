@@ -55,15 +55,14 @@ class RepeatedTimer(object):
       self.is_running = False
 
 def clean_windows():
-  if active_server == "":
-    for game in game_list:
-      try:
-        open_windows = wc.getWindowsWithTitle(game.name)
-      except:
-        continue
-      else:
-        while len(open_windows) > 0:
-          open_windows[-1].close()
+  for game in game_list:
+    try:
+      open_windows = wc.getWindowsWithTitle(game.name)
+    except:
+      continue
+    else:
+      while len(open_windows) > 0:
+        open_windows[-1].close()
         
 def update_status():
   checktime()
