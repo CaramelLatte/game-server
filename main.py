@@ -41,15 +41,16 @@ def checkports():
 
       try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect_ex((host, int(port)))
-        s.close()
-
+        s.bind((host, int(port)))
+        
       except socket.error as e:
         if e.errno == errno.EADDRINUSE:
           print(f"{game.name} port {port} is already in use")
         else:
           # something else raised the socket.error exception
           print(e)
+          s.close()
+
       else:
         print(f"Port {port} is open")
         s.close()
