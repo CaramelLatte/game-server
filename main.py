@@ -5,7 +5,7 @@ from time import sleep
 from serv import *
 import pywinctl as wc
 import pyautogui as ag
-import socket
+import socket, errno
 import datetime
 import json
 
@@ -36,17 +36,20 @@ def checkports():
   
     host = "127.0.0.1"
     port = game.port
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     for port in game.port:
 
       try:
-          s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-          s.connect((host, port))
-          print(f"{game.name} port {port} is open")
-          s.close()
-      except socket.error:
-          print(f"{game.name} port {port} closed.")
-          s.close()
+        s.bind(("127.0.0.1", 5555))
+      except socket.error as e:
+        if e.errno == errno.EADDRINUSE:
+          print("{port} is already in use")
+        else:
+          # something else raised the socket.error exception
+          print(e)
 
+s.close()
 
 
 
