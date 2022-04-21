@@ -19,7 +19,7 @@ class GameServer:
       subprocess.call(["lxterminal", "-t", self.name])
       print("Server not found. Starting..")
       time.sleep(2)
-      #server = wc.getWindowsWithTitle(self.name)[0]
+      server = wc.getWindowsWithTitle(self.name)[0]
       server.activate()
       time.sleep(1)
       ag.typewrite("cd " + self.path + "\n")
