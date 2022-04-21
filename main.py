@@ -75,7 +75,7 @@ def update_status():
     try:
       server = wc.getWindowsWithTitle(game.name)[0]
     except:
-      pass
+      print("Server not found")
     else:
       active_server = game.name
           
@@ -158,8 +158,9 @@ try:
     global active_server
     if active_server == "valheim":
       delay = False
-      returnval = val_serv.exec_cmd("stop")
       active_server = ""
+      returnval = val_serv.exec_cmd("stop")
+      
       return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
     else:
         return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": "valheim not open"})
