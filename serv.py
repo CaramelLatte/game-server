@@ -46,6 +46,6 @@ class GameServer:
 
 game_list = []
 minecraft_serv = GameServer("minecraft", [25565], "/home/pi/minecraft/", {"file": "/home/pi/minecraft/logs/latest.log",  "connect": "joined the game", "disconnect": "left the game", "splice_start": 33}, {"launch": "java -Xmx5G -Xms5G -jar server.jar nogui \n", "stop": "/stop\n"})
-val_serv = GameServer("valheim", [2456, 2457, 2458], "/home/pi/valheim_server/", {"file": "/home/pi/valheim_server/valheim_log.txt", "connect": "Got handshake from client", "disconnect": "Closing socket", "splice_start": 20}, {"launch": "./start_server.sh", "stop": "ctrl,c"})
+val_serv = GameServer("valheim", [5656], "/home/pi/valheim_server/", {"file": "/home/pi/valheim_server/valheim_log.txt", "connect": "Got handshake from client", "disconnect": "Closing socket", "splice_start": 20}, {"launch": "./start_server.sh", "stop": "ctrl,c"})
 game_list.append(minecraft_serv)
 game_list.append(val_serv)
