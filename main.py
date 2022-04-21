@@ -41,7 +41,7 @@ def checkports():
 
       try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((host, int(port)))
+        s.connect((host, int(port)))
         s.close()
 
       except socket.error as e:
