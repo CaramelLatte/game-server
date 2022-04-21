@@ -123,7 +123,6 @@ try:
       delay = True
       delay_time = datetime.datetime.now()
       clean_windows()
-      sleep(1)
       active_server = "minecraft"
       returnval = minecraft_serv.launch()
       return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
