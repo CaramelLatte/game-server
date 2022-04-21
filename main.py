@@ -121,6 +121,7 @@ try:
       delay = True
       delay_time = datetime.datetime.now()
       clean_windows()
+      active_server = "minecraft"
       returnval = minecraft_serv.launch()
       return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
     else:
@@ -144,10 +145,11 @@ try:
   def start_val():
     global delay
     global delay_time
-    #clean_windows()
+    clean_windows()
     if not delay:
       delay_time=datetime.datetime.now()
       delay = True
+      active_server = "valheim"
       returnval = val_serv.launch()
       return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
     else:
