@@ -49,7 +49,7 @@ def checkports():
           print(f"{game.name} port {port} is already in use")
         else:
           # something else raised the socket.error exception
-          print("got here")
+          print(e)
       else:
         print(f"Port {port} is open")
         s.close()
