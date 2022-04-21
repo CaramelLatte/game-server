@@ -46,7 +46,7 @@ def checkports():
 
       except socket.error as e:
         if e.errno == errno.EADDRINUSE:
-          print("{port} is already in use")
+          print(f"{game.name} port {port} is already in use")
         else:
           # something else raised the socket.error exception
           print(e)
