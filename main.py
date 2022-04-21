@@ -50,6 +50,9 @@ def checkports():
         else:
           # something else raised the socket.error exception
           print("got here")
+      else:
+        print(f"Port {port} is open")
+        s.close()
       
 
 
