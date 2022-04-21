@@ -60,7 +60,7 @@ def clean_windows():
       try:
         open_windows = wc.getWindowsWithTitle(game.name)
       except:
-        pass
+        continue
       else:
         while len(open_windows) > 0:
           open_windows[-1].close()
@@ -121,7 +121,7 @@ try:
     if not delay:
       delay = True
       delay_time = datetime.datetime.now()
-      #clean_windows()
+      clean_windows()
       returnval = minecraft_serv.launch()
       return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
     else:
