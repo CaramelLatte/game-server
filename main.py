@@ -59,12 +59,12 @@ def clean_windows():
     try:
       open_windows = wc.getWindowsWithTitle(game.name)
     except:
-      sleep(1)
       continue
     else:
       while len(open_windows) >= 1:
         open_windows[-1].close()
         open_windows.remove[-1]
+  return
         
 def update_status():
   checktime()
