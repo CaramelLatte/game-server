@@ -55,14 +55,15 @@ class RepeatedTimer(object):
       self.is_running = False
 
 def clean_windows():
-  for game in game_list:
-    try:
-      open_windows = wc.getWindowsWithTitle(game.name)
-    except:
-      pass
-    else:
-      while len(open_windows) > 0:
-        open_windows[-1].close()
+  if active_server == "":
+    for game in game_list:
+      try:
+        open_windows = wc.getWindowsWithTitle(game.name)
+      except:
+        pass
+      else:
+        while len(open_windows) > 0:
+          open_windows[-1].close()
         
 def update_status():
   checktime()
@@ -158,7 +159,7 @@ try:
     global active_server
     if active_server == "valheim":
       delay = False
-      returnval = minecraft_serv.exec_cmd("stop")
+      returnval = val_serv.exec_cmd("stop")
       active_server = ""
       return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
     else:
