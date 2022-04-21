@@ -119,6 +119,7 @@ try:
   def start_mine():
     global delay
     global delay_time
+    global active_server
     if not delay:
       delay = True
       delay_time = datetime.datetime.now()
@@ -147,6 +148,7 @@ try:
   def start_val():
     global delay
     global delay_time
+    global active_server
     clean_windows()
     if not delay:
       delay_time=datetime.datetime.now()
