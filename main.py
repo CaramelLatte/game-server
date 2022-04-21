@@ -41,7 +41,7 @@ def checkports():
 
       try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind(("127.0.0.1", int(port)))
+        s.bind((host, int(port)))
         s.close()
 
       except socket.error as e:
@@ -49,7 +49,9 @@ def checkports():
           print(f"{game.name} port {port} is already in use")
         else:
           # something else raised the socket.error exception
-          print(e)
+          print("got here")
+      
+
 
     
 
