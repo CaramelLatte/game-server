@@ -63,7 +63,7 @@ def clean_windows():
     else:
       while len(open_windows) >= 1:
         open_windows[-1].close()
-        open_windows.remove[-1]
+        open_windows.pop(-1)
   return
         
 def update_status():
