@@ -40,7 +40,7 @@ def checkports():
 
       try:
           s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-          s.bind((host, port))
+          s.connect((host, port))
           print(f"{game.name} port {port} is open")
           s.close()
       except socket.error:
