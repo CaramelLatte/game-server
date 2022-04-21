@@ -28,6 +28,24 @@ def checktime():
   else:
     #delay = True
     return
+def checkports():
+  global delay
+  global delay_time
+  # active_server = ""
+  for game in game_list:
+  
+    host = "127.0.0.1"
+    port = game.port
+    for port in game.port:
+
+      try:
+          s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+          s.bind((host, port))
+          print(f"{game.name} port {port} is open")
+          s.close()
+      except socket.error:
+          print(f"{game.name} port {port} closed.")
+
 
 
 
@@ -55,24 +73,25 @@ class RepeatedTimer(object):
 
 def update_status():
   checktime()
+  checkports()
   
   global connected_players
   global active_server
   global player_count
   # active_server = ""
-  for game in game_list:
+  # for game in game_list:
   
-    host = "127.0.0.1"
-    port = game.port[0]
-    for port in game.port:
+  #   host = "127.0.0.1"
+  #   port = game.port[0]
+  #   for port in game.port:
 
-      try:
-          s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-          s.connect((host, port))
-          print(f"Port {port} is open")
-          s.close()
-      except socket.error:
-          print(f"Port {port} closed.")
+  #     try:
+  #         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  #         s.connect((host, port))
+  #         print(f"Port {port} is open")
+  #         s.close()
+  #     except socket.error:
+  #         print(f"Port {port} closed.")
 
       # try:
       #   is_active = wc.getWindowsWithTitle(game.name)[0]
