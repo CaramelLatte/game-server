@@ -41,7 +41,9 @@ def checkports():
     for port in game.port:
 
       try:
-        s.bind(("127.0.0.1", 5555))
+        s.bind(("127.0.0.1", int(port)))
+        s.close()
+
       except socket.error as e:
         if e.errno == errno.EADDRINUSE:
           print("{port} is already in use")
@@ -49,8 +51,7 @@ def checkports():
           # something else raised the socket.error exception
           print(e)
 
-s.close()
-
+    
 
 
 class RepeatedTimer(object):
