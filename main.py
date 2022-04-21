@@ -62,8 +62,9 @@ def clean_windows():
       sleep(1)
       continue
     else:
-      while len(open_windows) > 0:
+      while len(open_windows) >= 1:
         open_windows[-1].close()
+        open_windows.remove[-1]
         
 def update_status():
   checktime()
