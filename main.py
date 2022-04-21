@@ -64,15 +64,15 @@ def update_status():
   
     host = "127.0.0.1"
     port = game.port[0]
+    for port in game.port:
 
-    # try to connect to a bind shell
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((host, port))
-        print(f"Port {port} is open")
-        s.close()
-    except socket.error:
-        print(f"Port {port} closed.")
+      try:
+          s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+          s.connect((host, port))
+          print(f"Port {port} is open")
+          s.close()
+      except socket.error:
+          print(f"Port {port} closed.")
 
       # try:
       #   is_active = wc.getWindowsWithTitle(game.name)[0]
