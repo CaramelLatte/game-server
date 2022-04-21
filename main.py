@@ -121,7 +121,7 @@ try:
     if not delay:
       delay = True
       delay_time = datetime.datetime.now()
-      clean_windows()
+      #clean_windows()
       returnval = minecraft_serv.launch()
       return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
     else:
