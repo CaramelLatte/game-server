@@ -94,8 +94,8 @@ def update_status():
           print(f"'{parsed_name}'")
           print(connected_players)
           #print(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
-          print(parsed_name in connected_players)
-          connected_players.remove(parsed_name)
+          if(parsed_name in connected_players):
+            connected_players.remove(parsed_name)
       file.close()
   if active_server != "":
     print(f'{datetime.datetime.now()}: Active sever is {active_server}\nOnline players: {len(connected_players)}: {connected_players}')
