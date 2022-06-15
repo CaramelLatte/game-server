@@ -29,9 +29,6 @@ def checktime():
     return
 
 
-    
-
-
 class RepeatedTimer(object):
   def __init__(self, interval, function):
     self._timer = None
