@@ -60,7 +60,7 @@ def clean_windows():
     else:
       while len(open_windows) >= 1:
         open_windows[-1].close()
-        open_windows.pop(-1)
+        #open_windows.pop(-1)
   return
         
 def update_status():
@@ -91,9 +91,8 @@ def update_status():
         elif game.log_file["disconnect"] in line:
 
           parsed_name = line[game.log_file["splice_start"]:].strip("\n").replace(game.log_file["disconnect"], "").replace(" ", "")
-          print(f"'{parsed_name}'")
-          print(connected_players)
-          #print(parsed_name.strip("\n").replace(game.log_file["disconnect"], "").replace(" ", ""))
+          # print(f"'{parsed_name}'")
+          # print(connected_players)
           if(parsed_name in connected_players):
             connected_players.remove(parsed_name)
       file.close()
