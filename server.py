@@ -91,7 +91,7 @@ def minestats(gameid):
         if gameid == game.name:
             return str(game.running)
 @app.route('/<gameid>/<cmd>')
-def exec_cmd_on_game():
+def exec_cmd_on_game(gameid, cmd):
     gameid = gameid
     cmd = cmd
     global delay
