@@ -84,9 +84,12 @@ def home():
 @app.route('/update')
 def serv_stats():
     return json.dumps({"active_server" : active_server, "player_count" : len(connected_players), "returnval" : "0"})
-@app.route('/minecraft')
-def minestats():
-    return json.dumps({"active_server" : active_server, "player_count" : len(connected_players), "returnval" : "0"})
+@app.route('/<gameid>')
+def minestats(gameid):
+    gameid = gameid
+    for game in game_list:
+        if gameid == game.name:
+            return str(game.running)
 @app.route('/minecraft/start')
 def start_mine():
     global delay
@@ -108,9 +111,9 @@ def stop_mine():
         delay = False
         returnval = minecraft_serv.exec_cmd("stop")
         active_server = ""
-        return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": returnval})
+        return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
     else:
-        return json.dumps({"active_server" : active_server, "player_count": player_count, "returnval": "Minecraft Server not running"})
+        return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": "Minecraft Server not running"})
     
 
 if __name__ == "__main__":
