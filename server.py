@@ -53,6 +53,7 @@ def update_status():
     global connected_players
     global active_server
     global player_count
+    global delay
     active_server = ""
     for game in game_list:
         game.check_if_running()
@@ -72,6 +73,8 @@ def update_status():
                 if(parsed_name in connected_players):
                     connected_players.remove(parsed_name)
         file.close()
+    if active_server == "":
+        delay = False
 
 rt = RepeatedTimer(10, update_status)
 
