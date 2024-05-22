@@ -97,7 +97,6 @@ def exec_cmd_on_game(gameid, cmd):
     global delay
     global delay_time
     global active_server
-    print(cmd)
     for game in game_list:
         if game.name == gameid:
             if cmd == "start":
@@ -105,6 +104,7 @@ def exec_cmd_on_game(gameid, cmd):
                     delay = True
                     delay_time = datetime.datetime.now()
                     active_server = gameid
+                    return game.launch()
                 else:
                     return("Server is leased. Please try again later.")
             elif cmd == "stop":
