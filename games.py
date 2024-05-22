@@ -34,7 +34,7 @@ class GameServer:
 
     def check_if_running(self):
         self.running = False
-        os.system("ps -ef > running_jobs.txt")
+        os.system("sudo ps -ef > running_jobs.txt")
         f = open("running_jobs.txt", "r")
         file_contents = f.readlines()
         for line in file_contents:
