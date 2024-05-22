@@ -112,7 +112,7 @@ def exec_cmd_on_game(gameid, cmd):
                     active_server = ""
                 else:
                     return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": "Server not running"})
-            if cmd in game.exec_cmd.keys():
+            if cmd in game.exec_cmd:
                 returnval = game.exec_cmd(cmd)
 
             return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
