@@ -38,7 +38,7 @@ class GameServer:
         f = open("running_jobs.txt", "r")
         file_contents = f.readlines()
         for line in file_contents:
-            if self.cmds["launch"] in line:
+            if self.cmds["start"] in line:
                 self.running = True
             else:
                 pass
