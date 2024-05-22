@@ -56,6 +56,13 @@ class GameServer:
 
     def exec_cmd(self, command):
         clear_terminal_inputs()
+        if command == "start":
+            self.check_if_running()
+        if not self.running:
+            print(f"{self.name} server not found, launching")
+            clear_terminal_inputs()
+            keyboard.write("cd " + self.path)
+            keyboard.press_and_release("enter")
         hotkeys = ["ctrl", "shift", "alt"]
         for key in hotkeys:
             if key in self.cmds[command]:
