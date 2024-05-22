@@ -70,7 +70,7 @@ def update_status():
                     connected_players.append(parsed_name)
             elif game.log_file["disconnect"] in line:
                 parsed_name = line[game.log_file["splice_start"]:].strip("\n").replace(game.log_file["disconnect"], "").replace(" ", "")
-                if(parsed_name in connected_players):
+                if parsed_name in connected_players:
                     connected_players.remove(parsed_name)
         file.close()
     if active_server == "":
