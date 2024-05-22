@@ -67,6 +67,6 @@ class GameServer:
         return command
 game_list = []
 
-minecraft_serv = GameServer("Minecraft", [25565], "/home/gameserver/minecraft/", {"file": "/home/gameserver/minecraft/logs/latest.log",  "connect": "joined the game", "disconnect": "left the game", "splice_start": 33}, {"launch": "java -xmx15g -xms15g -jar server.jar nogui", "stop": "/stop", "test": "shift,s"})
+minecraft_serv = GameServer("Minecraft", [25565], "/home/gameserver/minecraft/", {"file": "/home/gameserver/minecraft/logs/latest.log",  "connect": "joined the game", "disconnect": "left the game", "splice_start": 33}, {"launch": "sudo java -jar server.jar nogui", "stop": "/stop", "test": "shift,s"})
 
 game_list.append(minecraft_serv)
