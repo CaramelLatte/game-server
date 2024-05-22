@@ -97,6 +97,7 @@ def exec_cmd_on_game(gameid, cmd):
     global delay
     global delay_time
     global active_server
+
     for game in game_list:
         if game.name == gameid:
             if cmd == "start":
@@ -112,8 +113,7 @@ def exec_cmd_on_game(gameid, cmd):
                     active_server = ""
                 else:
                     return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": "Server not running"})
-            if cmd in game.cmds:
-                returnval = game.exec_cmd(cmd)
+            returnval = game.exec_cmd(cmd)
 
             return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
         
