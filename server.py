@@ -85,7 +85,7 @@ def home():
 def serv_stats():
     return json.dumps({"active_server" : active_server, "player_count" : len(connected_players), "returnval" : "0"})
 @app.route('/<gameid>')
-def minestats(gameid):
+def gamecheck(gameid):
     gameid = gameid
     for game in game_list:
         if gameid == game.name:
@@ -97,39 +97,26 @@ def exec_cmd_on_game(gameid, cmd):
     global delay
     global delay_time
     global active_server
-    if cmd == "start":
-        if not delay and active_server == "":
-            delay = True
-            delay_time = datetime.datetime.now()
-            active_server = gameid
-            for game in game_list:
-                if game.name == gameid:
-                    returnval = game.exec_cmd("launch")
-            return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
-        else:
-            return("Server is leased. Please try again later.")
-    elif cmd == "stop":
-        if active_server == gameid:
-            delay = False
-            for game in game_list:
-                if game.name == gameid:
-                    returnval = game.exec_cmd("stop")
+    for game in game_list:
+        if game.name == gameid:
+            if cmd == "start":
+                if not delay and active_server == "":
+                    delay = True
+                    delay_time = datetime.datetime.now()
+                    active_server = gameid
+                else:
+                    return("Server is leased. Please try again later.")
+            elif cmd == "stop":
+                if active_server == gameid:
+                    delay = False
                     active_server = ""
+                else:
+                    return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": "Server not running"})
+            if cmd in game.exec_cmd.keys():
+                returnval = game.exec_cmd(cmd)
+
             return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
-        else:
-            return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": "Server not running"})
-# @app.route("/minecraft/stop")
-# def stop_mine():
-#     global active_server
-#     global delay
-#     if active_server == "minecraft":
-#         delay = False
-#         returnval = minecraft_serv.exec_cmd("stop")
-#         active_server = ""
-#         return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
-#     else:
-#         return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": "Minecraft Server not running"})
-    
+        
 
 if __name__ == "__main__":
     try:
