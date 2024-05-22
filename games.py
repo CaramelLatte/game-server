@@ -34,7 +34,7 @@ class GameServer:
 
     def check_if_running(self):
         self.running = False
-        os.system("sudo ps -ef > running_jobs.txt")
+        os.system("ps -ef > running_jobs.txt")
         f = open("running_jobs.txt", "r")
         file_contents = f.readlines()
         for line in file_contents:
@@ -67,6 +67,6 @@ class GameServer:
         return command
 game_list = []
 
-minecraft_serv = GameServer("Minecraft", [25565], "/home/gameserver/minecraft/", {"file": "/home/gameserver/minecraft/logs/latest.log",  "connect": "joined the game", "disconnect": "left the game", "splice_start": 33}, {"launch": "java -jar server.jar nogui", "stop": "/stop", "test": "shift,s"})
+minecraft_serv = GameServer("minecraft", [25565], "/home/gameserver/minecraft/", {"file": "/home/gameserver/minecraft/logs/latest.log",  "connect": "joined the game", "disconnect": "left the game", "splice_start": 33}, {"launch": "java -jar server.jar nogui", "stop": "/stop", "test": "shift,s"})
 
 game_list.append(minecraft_serv)
