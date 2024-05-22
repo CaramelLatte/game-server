@@ -50,7 +50,7 @@ class GameServer:
             clear_terminal_inputs()
             keyboard.write("cd " + self.path)
             keyboard.press_and_release("enter")
-            self.exec_cmd("launch")
+            self.exec_cmd("start")
         else:
             print(f"{self.name} already running")
 
