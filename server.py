@@ -111,8 +111,10 @@ def exec_cmd_on_game(gameid, cmd):
     elif cmd == "stop":
         if active_server == gameid:
             delay = False
-            returnval = minecraft_serv.exec_cmd("stop")
-            active_server = ""
+            for game in game_list:
+                if game.name == gameid:
+                    returnval = game.exec_cmd("stop")
+                    active_server = ""
             return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
         else:
             return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": "Server not running"})
