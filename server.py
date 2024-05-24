@@ -97,6 +97,7 @@ def exec_cmd_on_game(gameid, cmd):
     gameid = gameid
     cmd = cmd
     global delay_time
+    global active_server
     for game in game_list:
         if game.name == gameid:
             if cmd == "start":
