@@ -9,13 +9,13 @@ import json
 app = Flask(__name__)
 CORS(app)
 active_server = ""
-player_count = 0
+player_count = 0 
 delay = False
-hosting = False
 delay_time = datetime.datetime.now()
-connected_players = []
-lease_time = 10
+connected_players = [] 
+lease_time = 10 #value in minutes to block additional start/stop commands after a new game server instance is begun. 0 means server will allow all start/stop commands always.
 
+#function used to check if server lease time has elapsed
 def checktime():
     global delay
     check_time = datetime.datetime.now()
@@ -25,6 +25,7 @@ def checktime():
     else:
         return
     
+#timer object to initiate periodic status update checks
 class RepeatedTimer(object):
     def __init__(self, interval, function):
         self._timer = None
@@ -47,6 +48,7 @@ class RepeatedTimer(object):
         self._timer.cancel()
         self.is_running = False
 
+#Function to periodically check if a server is running, and if so, to pull from game's most recent log data to determine connected players
 def update_status():
     checktime()
     global delay
@@ -105,8 +107,7 @@ def exec_cmd_on_game(gameid, cmd):
                 else:
                     return("Server is leased. Please try again later.")
             elif cmd == "stop":
-                if active_server == game.name:
-                    delay = False
+                if active_server == game.name and not delay:
                     active_server = ""
                 else:
                     return json.dumps("Server not running")

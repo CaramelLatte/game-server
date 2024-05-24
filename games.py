@@ -6,6 +6,7 @@ def clear_terminal_inputs():
     keyboard.press_and_release("enter")
     time.sleep(1)
 
+#Keyboard module is used to emulate key presses to send commands to already-active terminal processes. Because emulated keys for capital letters and characters accessed by shift key don't physically exist on keyboard, this function can be used to enter special characters if necessary.
 def parse_text(text):
     special_chars = {"~":"`","!":"1","@":"2","#":"3","$":"4","%":"5","^":"6","&":"7","*":"8","(":"9",")":"0","_":"-","+":"=","<":",",">":".","?":"/","{":"[",", }":"]","|":"\\"}
     for char in text:
@@ -25,7 +26,7 @@ def parse_text(text):
 
 class GameServer:
     def __init__(self, name, port, path, log_file, cmds) -> None:
-        self.name = name
+        self.name = name #
         self.port = port
         self.path = path
         self.log_file = log_file
