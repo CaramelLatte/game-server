@@ -107,7 +107,7 @@ def exec_cmd_on_game(gameid, cmd):
                 else:
                     return("Server is leased. Please try again later.")
             elif cmd == "stop":
-                if active_server == game.name and not delay:
+                if active_server == game.name and delay == False:
                     active_server = ""
                 else:
                     return json.dumps("Server not running")
