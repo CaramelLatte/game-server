@@ -14,13 +14,13 @@ delay = False
 hosting = False
 delay_time = datetime.datetime.now()
 connected_players = []
+lease_time = 10
 
 def checktime():
     global delay
-    global delay_time
     check_time = datetime.datetime.now()
     difference = (check_time.minute + (check_time.hour * 60)) - (delay_time.minute + (delay_time.hour * 60))
-    if difference >= 10:
+    if difference >= lease_time:
         delay = False
     else:
         return
@@ -49,11 +49,8 @@ class RepeatedTimer(object):
 
 def update_status():
     checktime()
-
-    global connected_players
-    global active_server
-    global player_count
     global delay
+    global active_server 
     active_server = ""
     for game in game_list:
         game.check_if_running()
@@ -83,21 +80,21 @@ def home():
     return "No. Go away."
 @app.route('/update')
 def serv_stats():
+    update_status()
     return json.dumps({"active_server" : active_server, "player_count" : len(connected_players), "returnval" : "0"})
+
 @app.route('/<gameid>')
 def gamecheck(gameid):
     gameid = gameid
     for game in game_list:
         if gameid == game.name:
             return str(game.running)
+
 @app.route('/<gameid>/<cmd>')
 def exec_cmd_on_game(gameid, cmd):
     gameid = gameid
     cmd = cmd
-    global delay
     global delay_time
-    global active_server
-
     for game in game_list:
         if game.name == gameid:
             if cmd == "start":
@@ -114,7 +111,6 @@ def exec_cmd_on_game(gameid, cmd):
                 else:
                     return json.dumps("Server not running")
             returnval = game.exec_cmd(cmd)
-
             return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
         
 
