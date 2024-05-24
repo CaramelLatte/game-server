@@ -13,7 +13,7 @@ player_count = 0
 delay = False
 delay_time = datetime.datetime.now()
 connected_players = [] 
-lease_time = 10 #value in minutes to block additional start/stop commands after a new game server instance is begun. 0 means server will allow all start/stop commands always.
+lease_time = 5 #value in minutes to block additional start/stop commands after a new game server instance is begun. 0 means server will allow all start/stop commands always.
 
 #function used to check if server lease time has elapsed
 def checktime():
@@ -98,6 +98,7 @@ def exec_cmd_on_game(gameid, cmd):
     cmd = cmd
     global delay_time
     global active_server
+    global delay
     for game in game_list:
         if game.name == gameid:
             if cmd == "start":
