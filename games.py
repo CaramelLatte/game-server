@@ -10,17 +10,14 @@ def clear_terminal_inputs():
 def parse_text(text):
     special_chars = {"~":"`","!":"1","@":"2","#":"3","$":"4","%":"5","^":"6","&":"7","*":"8","(":"9",")":"0","_":"-","+":"=","<":",",">":".","?":"/","{":"[",", }":"]","|":"\\"}
     for char in text:
-        if char.isalpha() == True:
+        if char.isalpha() == True and char.isupper() == True:
             if char.isupper() == True:
                 char = char.lower()
-                hotkey = "shift"
-                keyboard.press_and_release(f"{hotkey}+" + char)
-            else:
-                keyboard.write(char)
-                
+                keyboard.press_and_release(f"shift+{char}")
         elif char in special_chars.keys():
-            hotkey = "shift"
-            keyboard.press_and_release(f"{hotkey}+" + char)
+            keyboard.press("shift")
+            keyboard.write(char)
+            keyboard.release("shift")
         else:
             keyboard.write(char)
 
