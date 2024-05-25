@@ -36,10 +36,11 @@ class GameServer:
         f = open("running_jobs.txt", "r")
         file_contents = f.readlines()
         for line in file_contents:
-            if str(self.port) in line:
-                self.running = True
-            else:
-                pass
+            for port in self.ports:
+                if str(port) in line:
+                    self.running = True
+                else:
+                    pass
 
     def launch(self):
         self.check_if_running()
@@ -71,7 +72,7 @@ class GameServer:
         return command
 game_list = []
 
-minecraft_serv = GameServer("minecraft", 25565, "/home/gameserver/minecraft/", {"file": "/home/gameserver/minecraft/logs/latest.log",  "connect": "joined the game", "disconnect": "left the game", "splice_start": 33}, {"start": "java -jar server.jar nogui", "stop": "/stop"})
-val_serv = GameServer("valheim", 2456, "/home/gameserver/valheim/", {"file": "/home/gameserver/valheim/valheim_log.txt", "connect": "Got handshake from client", "disconnect": "Closing socket", "splice_start": 20}, {"start": ". start-server.sh", "stop": "ctrl,c"})
+minecraft_serv = GameServer("minecraft", [25565], "/home/gameserver/minecraft/", {"file": "/home/gameserver/minecraft/logs/latest.log",  "connect": "joined the game", "disconnect": "left the game", "splice_start": 33}, {"start": "java -jar server.jar nogui", "stop": "/stop"})
+val_serv = GameServer("valheim", [2456, 2457], "/home/gameserver/valheim/", {"file": "/home/gameserver/valheim/valheim_log.txt", "connect": "Got handshake from client", "disconnect": "Closing socket", "splice_start": 20}, {"start": ". start-server.sh", "stop": "ctrl,c"})
 game_list.append(minecraft_serv)
 game_list.append(val_serv)
