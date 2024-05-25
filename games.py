@@ -16,7 +16,7 @@ def parse_text(text):
                 keyboard.press_and_release(f"shift+{char}")
         elif char in special_chars.keys():
             keyboard.press("shift")
-            keyboard.write(char)
+            keyboard.press(char)
             keyboard.release("shift")
         else:
             keyboard.write(char)
@@ -75,3 +75,4 @@ minecraft_serv = GameServer("minecraft", 25565, "/home/gameserver/minecraft/", {
 val_serv = GameServer("valheim", 2456, "/home/gameserver/valheim/", {"file": "/home/gameserver/valheim/valheim_log.txt", "connect": "Got handshake from client", "disconnect": "Closing socket", "splice_start": 20}, {"start": ". start_server.sh", "stop": "ctrl,c"})
 game_list.append(minecraft_serv)
 game_list.append(val_serv)
+parse_text(val_serv.cmds["start"])
