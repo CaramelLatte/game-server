@@ -39,7 +39,7 @@ class GameServer:
         f = open("running_jobs.txt", "r")
         file_contents = f.readlines()
         for line in file_contents:
-            if self.port in line:
+            if str(self.port) in line:
                 self.running = True
             else:
                 pass
