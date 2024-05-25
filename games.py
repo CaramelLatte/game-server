@@ -24,7 +24,7 @@ def parse_text(text):
 class GameServer:
     def __init__(self, name, port, path, log_file, cmds) -> None:
         self.name = name #
-        self.port = port
+        self.ports = port
         self.path = path
         self.log_file = log_file
         self.cmds = cmds
