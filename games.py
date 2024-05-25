@@ -69,7 +69,7 @@ class GameServer:
                 hotkey = self.cmds[command].split(",")
                 keyboard.press_and_release(f"{hotkey[0]}+{hotkey[1]}")
                 return command
-        keyboard.write(self.cmds[command])
+        parse_text(self.cmds[command])
         keyboard.press_and_release("enter")
         return command
 game_list = []
