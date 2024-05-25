@@ -83,7 +83,7 @@ def home():
 @app.route('/update')
 def serv_stats():
     update_status()
-    return json.dumps({"active_server" : active_server, "player_count" : len(connected_players), "returnval" : "0"})
+    return json.dumps({"active_server" : active_server, "player_count" : len(connected_players),"players" : connected_players, "returnval" : "0"})
 
 @app.route('/<gameid>')
 def gamecheck(gameid):
@@ -114,7 +114,7 @@ def exec_cmd_on_game(gameid, cmd):
                 else:
                     return json.dumps("Server not running")
             returnval = game.exec_cmd(cmd)
-            return json.dumps({"active_server" : active_server, "player_count": len(connected_players), "returnval": returnval})
+            return json.dumps({"active_server" : active_server, "player_count": len(connected_players),"players" : connected_players, "returnval": returnval})
         
 
 if __name__ == "__main__":
