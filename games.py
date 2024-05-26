@@ -64,7 +64,7 @@ class GameServer:
     
 game_list = []
 
-minecraft_serv = GameServer("minecraft", "minecraft.png", [25565], "/home/gameserver/minecraft/", {"file": "/home/gameserver/minecraft/logs/latest.log",  "connect": "joined the game", "disconnect": "left the game", "splice_start": 33}, {"start": "java -jar server.jar nogui", "stop": "/stop"})
+minecraft_serv = GameServer("minecraft", "static/minecraft.png", [25565], "/home/gameserver/minecraft/", {"file": "/home/gameserver/minecraft/logs/latest.log",  "connect": "joined the game", "disconnect": "left the game", "splice_start": 33}, {"start": "java -jar server.jar nogui", "stop": "/stop"})
 val_serv = GameServer("valheim", None, [2456, 2457], "/home/gameserver/valheim/", {"file": "/home/gameserver/valheim/valheim_log.txt", "connect": "Got handshake from client", "disconnect": "Closing socket", "splice_start": 20}, {"start": ". start-server.sh", "stop": "ctrl,c"})
 seven_days_serv = GameServer("7 days to die", None, [26900,26901,26902], "/home/gameserver/7-days-to-die/", {"file": "/home/gameserver/7-days-to-die/log.txt", "connect": "' joined the game", "disconnect":"' left the game", "splice_start": 46}, {"start": ". startserver.sh -configfile='serverconfig.xml'"})
 game_list.append(minecraft_serv)
