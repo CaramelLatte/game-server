@@ -68,3 +68,4 @@ val_serv = GameServer("valheim", [2456, 2457], "/home/gameserver/valheim/", {"fi
 seven_days_serv = GameServer("7 days to die", [26900,26901,26902], "/home/gameserver/7-days-to-die/", {"file": "/home/gameserver/7-days-to-die/log.txt", "connect": "' joined the game", "disconnect":"' left the game", "splice_start": 46}, {"start": ". startserver.sh -configfile=\"serverconfig.xml\""})
 game_list.append(minecraft_serv)
 game_list.append(val_serv)
+game_list.append(seven_days_serv)
