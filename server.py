@@ -86,7 +86,7 @@ def home():
 @app.route('/update')
 def serv_stats():
     update_status()
-    return json.dumps({"active_server" : active_server, "player_count" : len(connected_players),"players" : connected_players, "returnval" : "0"})
+    return json.dumps({"active_server" : active_server, "player_count" : len(connected_players),"players" : connected_players, "returnval" : "0", "game_servers": game_list})
 
 @app.route('/<gameid>')
 def gamecheck(gameid):
