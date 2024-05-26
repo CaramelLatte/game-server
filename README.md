@@ -12,6 +12,6 @@ Changes planned:
 implement API key checking to only allow validated users to issue commands
 
 Games to add:
-V Rising\n
-Palworld\n
-Enshrouded\n
+V Rising
+Palworld
+Enshrouded
