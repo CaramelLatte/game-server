@@ -12,3 +12,8 @@ Add more games
 clean API handling to use variables instead of hard-coded paths (ex: /:gameID/:commandID)
 Change from checking running process list to querying open ports to determine if game is running, this solves the problem of a 'ghost' instance of an old process returned by current ps -ef > running_jobs.txt implementation incorrectly telling the server that a specific game is running when it no longer is
 implement API key checking to only allow validated users to issue commands
+
+Games to add:
+V Rising
+Palworld
+Enshrouded
