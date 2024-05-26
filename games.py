@@ -23,7 +23,7 @@ def parse_text(text):
 
 class GameServer:
     def __init__(self, name, port, path, log_file, cmds) -> None:
-        self.name = name #
+        self.name = name
         self.ports = port
         self.path = path
         self.log_file = log_file
@@ -41,16 +41,6 @@ class GameServer:
                     self.running = True
                 else:
                     pass
-
-    def launch(self):
-        self.check_if_running()
-        if not self.running:
-            clear_terminal_inputs()
-            keyboard.write("cd " + self.path)
-            keyboard.press_and_release("enter")
-            return self.exec_cmd("start")
-        else:
-            print(f"{self.name} already running")
 
     def exec_cmd(self, command):
         clear_terminal_inputs()
@@ -70,9 +60,11 @@ class GameServer:
         parse_text(self.cmds[command])
         keyboard.press_and_release("enter")
         return command
+    
 game_list = []
 
 minecraft_serv = GameServer("minecraft", [25565], "/home/gameserver/minecraft/", {"file": "/home/gameserver/minecraft/logs/latest.log",  "connect": "joined the game", "disconnect": "left the game", "splice_start": 33}, {"start": "java -jar server.jar nogui", "stop": "/stop"})
 val_serv = GameServer("valheim", [2456, 2457], "/home/gameserver/valheim/", {"file": "/home/gameserver/valheim/valheim_log.txt", "connect": "Got handshake from client", "disconnect": "Closing socket", "splice_start": 20}, {"start": ". start-server.sh", "stop": "ctrl,c"})
+seven_days_serv = GameServer("7 days to die", [26900,26901,26902], "/home/gameserver/7-days-to-die/", {"file": "/home/gameserver/7-days-to-die/log.txt", "connect": "' joined the game", "disconnect":"' left the game", "splice_start": 46}, {"start": ". startserver.sh -configfile=\"serverconfig.xml\""})
 game_list.append(minecraft_serv)
 game_list.append(val_serv)
