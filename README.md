@@ -8,12 +8,10 @@ Server is built to listen to specific end-points for HTTP requests, and execute 
 Adding new games is simple. In games.py, create a new instance of the GameServer object in the same style as the demo variable 'minecraft_serv'. The attributes of this object must be edited to match the specifics of the game name, port, path to executable, path to log file, identifying string flags for connection/disconnection messages (used to parse a list of connected users), and the commands you want to be able to issue to the process. You can add additional commands beyond what is shown.
 
 Changes planned:
-Add more games
-clean API handling to use variables instead of hard-coded paths (ex: /:gameID/:commandID)
-Change from checking running process list to querying open ports to determine if game is running, this solves the problem of a 'ghost' instance of an old process returned by current ps -ef > running_jobs.txt implementation incorrectly telling the server that a specific game is running when it no longer is
+
 implement API key checking to only allow validated users to issue commands
 
 Games to add:
-V Rising
-Palworld
-Enshrouded
+V Rising\n
+Palworld\n
+Enshrouded\n
