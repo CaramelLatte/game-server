@@ -58,21 +58,19 @@ def update_status():
     for game in game_list:
         game.check_if_running()
         if game.running == True:
-            break
-    if game.running == True:
-        active_server = game.name
-        file = open(game.log_file["file"], 'r')
+            active_server = game.name
+            file = open(game.log_file["file"], 'r')
 
-        for line in file:
-            if game.log_file["connect"] in line:
-                parsed_name = line[game.log_file["splice_start"]:].strip("\n").replace(game.log_file["connect"], "").replace(" ", "")
-                if not parsed_name in connected_players:
-                    connected_players.append(parsed_name)
-            elif game.log_file["disconnect"] in line:
-                parsed_name = line[game.log_file["splice_start"]:].strip("\n").replace(game.log_file["disconnect"], "").replace(" ", "")
-                if parsed_name in connected_players:
-                    connected_players.remove(parsed_name)
-        file.close()
+            for line in file:
+                if game.log_file["connect"] in line:
+                    parsed_name = line[game.log_file["splice_start"]:].strip("\n").replace(game.log_file["connect"], "").replace(" ", "")
+                    if not parsed_name in connected_players:
+                        connected_players.append(parsed_name)
+                elif game.log_file["disconnect"] in line:
+                    parsed_name = line[game.log_file["splice_start"]:].strip("\n").replace(game.log_file["disconnect"], "").replace(" ", "")
+                    if parsed_name in connected_players:
+                        connected_players.remove(parsed_name)
+            file.close()
     if active_server == "":
         for player in connected_players:
             connected_players.remove(player)
