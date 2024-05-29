@@ -71,3 +71,4 @@ pal_server = GameServer("palworld", None, [8211], "/home/gameserver/palworld/", 
 game_list.append(minecraft_serv)
 game_list.append(val_serv)
 game_list.append(seven_days_serv)
+game_list.append(pal_server)
