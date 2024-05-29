@@ -57,8 +57,9 @@ def update_status():
     active_server = ""
     for game in game_list:
         game.check_if_running()
-        if game.running == True:
+        if game.running == True and game.log["file"] is not None:
             active_server = game.name
+            
             file = open(game.log_file["file"], 'r')
 
             for line in file:
