@@ -94,10 +94,9 @@ def serv_stats():
 def return_image(gameid):
     gameid = gameid
     for game in game_list:
-        if gameid == game.name:
+        if gameid == game.name.lower():
             image_path = f"static/{game.icon}"
-            return image_path
-            # return send_file(image_path, mimetype='image/png')
+            return send_file(image_path, mimetype='image/png')
         else:
             return f"No image found. {gameid} not found in game list."
 @app.route('/<gameid>')
