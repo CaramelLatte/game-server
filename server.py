@@ -99,7 +99,7 @@ def return_image(gameid):
             return image_path
             # return send_file(image_path, mimetype='image/png')
         else:
-            return "No image found"
+            return f"No image found. {gameid} not found in game list."
 @app.route('/<gameid>')
 def gamecheck(gameid):
     gameid = gameid
