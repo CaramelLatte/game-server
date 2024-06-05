@@ -95,7 +95,7 @@ def return_image(gameid):
     gameid = gameid.lower()
     for game in game_list:
         if gameid == game.name.lower():
-            image_path = f"static/{game.icon+".png"}"
+            image_path = f"static/{game.icon}.png"
             return send_file(image_path, mimetype='image/png')
     return "No image found"
 @app.route('/<gameid>')
