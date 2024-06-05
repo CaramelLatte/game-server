@@ -95,7 +95,7 @@ def return_image(gameid):
     gameid = gameid
     for game in game_list:
         if gameid == game.name:
-            image_path = f"static/{game.icon}.png"
+            image_path = f"static/{game.icon}"
             return send_file(image_path, mimetype='image/png')
 @app.route('/<gameid>')
 def gamecheck(gameid):
