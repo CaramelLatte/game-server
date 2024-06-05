@@ -94,7 +94,7 @@ def serv_stats():
 def return_image(gameid):
     gameid = gameid.lower()
     for game in game_list:
-        if gameid == game.name:
+        if gameid == game.name.lower():
             image_path = f"static/{game.icon}"
             return send_file(image_path, mimetype='image/png')
     return "No image found"
