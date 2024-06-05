@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_file
 from flask_cors import CORS
 from threading import Timer
 from time import sleep
@@ -90,7 +90,10 @@ def serv_stats():
     for game in game_list:
         server_list.update({game.name : game.icon})
     return json.dumps({"active_server" : active_server, "player_count" : len(connected_players),"players" : connected_players, "returnval" : "0", "game_servers": server_list})
-
+@app.route('/image/<gameid>')
+def return_image(gameid):
+    image_path = f"static/{gameid}.png"
+    return send_file(image_path, mimetype='image/png')
 @app.route('/<gameid>')
 def gamecheck(gameid):
     gameid = gameid
