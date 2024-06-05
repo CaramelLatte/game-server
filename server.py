@@ -92,6 +92,7 @@ def serv_stats():
     return json.dumps({"active_server" : active_server, "player_count" : len(connected_players),"players" : connected_players, "returnval" : "0", "games": server_list})
 @app.route('/image/<gameid>')
 def return_image(gameid):
+    gameid = gameid
     for game in game_list:
         if gameid == game.name:
             image_path = f"static/{game.icon}.png"
