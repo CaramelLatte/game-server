@@ -86,10 +86,10 @@ def home():
 @app.route('/update')
 def serv_stats():
     update_status()
-    server_list = {}
+    server_list = []
     for game in game_list:
-        server_list.update({game.name : game.icon})
-    return json.dumps({"active_server" : active_server, "player_count" : len(connected_players),"players" : connected_players, "returnval" : "0", "game_servers": server_list})
+        server_list.update({"name" : game.name, "icon": game.icon, "status": game.running, "port": game.ports[0]})
+    return json.dumps({"active_server" : active_server, "player_count" : len(connected_players),"players" : connected_players, "returnval" : "0", "games": server_list})
 @app.route('/image/<gameid>')
 def return_image(gameid):
     image_path = f"static/{gameid}.png"
