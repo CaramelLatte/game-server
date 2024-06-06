@@ -92,17 +92,15 @@ def serv_stats():
     return json.dumps({"active_server" : active_server, "player_count" : len(connected_players),"players" : connected_players, "returnval" : "0", "games": server_list})
 @app.route('/image/<gameid>')
 def return_image(gameid):
-    gameid = gameid.lower()
     for game in game_list:
-        if gameid == game.name.lower():
+        if game.name.lower() == gameid.lower():
             image_path = f"static/{game.icon}.png"
             return send_file(image_path, mimetype='image/png')
     return "No image found"
 @app.route('/<gameid>')
 def gamecheck(gameid):
-    gameid = gameid
     for game in game_list:
-        if gameid == game.name:
+        if game.name.lower() == gameid.lower():
             return str(game.running)
 
 @app.route('/<gameid>/<cmd>')
@@ -113,7 +111,7 @@ def exec_cmd_on_game(gameid, cmd):
     global active_server
     global delay
     for game in game_list:
-        if game.name.lower() == gameid:
+        if game.name.lower() == gameid.lower():
             if cmd == "start":
                 if not delay and active_server == "":
                     delay = True
