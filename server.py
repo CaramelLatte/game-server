@@ -1,7 +1,6 @@
 from flask import Flask, send_file
 from flask_cors import CORS
 from threading import Timer
-from time import sleep
 from games import *
 import datetime
 import json
@@ -9,7 +8,6 @@ import json
 app = Flask(__name__)
 CORS(app)
 active_server = ""
-player_count = 0 
 delay = False
 delay_time = datetime.datetime.now()
 connected_players = [] 
