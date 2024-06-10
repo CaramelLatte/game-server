@@ -76,7 +76,7 @@ def update_status():
             connected_players.remove(player)
         delay = False
 
-rt = RepeatedTimer(10, update_status)
+rt = RepeatedTimer(2, update_status)
 
 @app.route('/')
 def home():
