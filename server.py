@@ -58,9 +58,7 @@ def update_status():
         if game.running == True:
             active_server = game.name
             if game.log_file["file"] is not None:
-
                 file = open(game.log_file["file"], 'r')
-
                 for line in file:
                     if game.log_file["connect"] in line:
                         parsed_name = line[game.log_file["splice_start"]:].strip("\n").replace(game.log_file["connect"], "").replace(" ", "")
