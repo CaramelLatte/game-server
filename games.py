@@ -66,7 +66,7 @@ game_list = []
 
 minecraft_serv = GameServer("Minecraft", "minecraft", [25565], "/home/gameserver/minecraft/", {"file": "/home/gameserver/minecraft/logs/latest.log",  "connect": "joined the game", "disconnect": "left the game", "splice_start": 33}, {"start": "java -jar server.jar nogui", "stop": "/stop"})
 val_serv = GameServer("Valheim", "valheim", [2456, 2457], "/home/gameserver/valheim/", {"file": "/home/gameserver/valheim/valheim_log.txt", "connect": "Got handshake from client", "disconnect": "Closing socket", "splice_start": 20}, {"start": ". start-server.sh", "stop": "ctrl,c"})
-seven_days_serv = GameServer("7 Days to Die", "7days", [26900,26901,26902], "/home/gameserver/7-days-to-die/", {"file": "/home/gameserver/7-days-to-die/log.txt", "connect": "' joined the game", "disconnect":"' left the game", "splice_start": 46}, {"start": ". startserver.sh -configfile='serverconfig.xml'", "stop" : "ctrl,c"})
+seven_days_serv = GameServer("7 Days to Die", "7days", [26900,26901,26902], "/home/gameserver/7-days-to-die/", {"file": "/home/gameserver/7-days-to-die/log.txt", "connect": "' joined the game", "disconnect":"' left the game", "splice_start": 49}, {"start": ". startserver.sh -configfile='serverconfig.xml'", "stop" : "ctrl,c"})
 pal_server = GameServer("Palworld", "palworld", [8211], "/home/gameserver/palworld/", {"file" : None, "connect": None, "disconnect": None, "splice_start": 0}, {"start": ". palserver.sh", "stop": "ctrl,c"})
 game_list.append(minecraft_serv)
 game_list.append(val_serv)
