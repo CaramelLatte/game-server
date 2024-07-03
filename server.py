@@ -12,7 +12,7 @@ delay = False
 delay_time = datetime.datetime.now()
 connected_players = [] 
 lease_time = 0 #value in minutes to block additional start/stop commands after a new game server instance is begun. 0 means server will allow all start/stop commands always.
-server_empty_time = 0 #value in minutes used to track how long a server has been empty for the purposes of automatically stopping it to save resources.
+
 #function used to check if server lease time has elapsed
 def checktime():
     global delay
@@ -46,13 +46,12 @@ class RepeatedTimer(object):
         self._timer.cancel()
         self.is_running = False
 
-#Function to periodically check if a server is running, and if so, to pull from game's most recent log data to determine connected players. Will also check server empty time if player_count = 0
+#Function to periodically check if a server is running, and if so, to pull from game's most recent log data to determine connected players
 def update_status():
     checktime()
     global delay
     global active_server
     global connected_players
-    global server_empty_time
     active_server = ""
     for game in game_list:
         game.check_if_running()
@@ -74,13 +73,6 @@ def update_status():
         for player in connected_players:
             connected_players.remove(player)
         delay = False
-    if len(connected_players) == 0:
-        server_empty_time += 1
-    if server_empty_time >= 20:
-        for game in game_list:
-            if game.name == active_server:
-                game.exec_cmd("stop")
-                server_empty_time = 0
 
 rt = RepeatedTimer(2, update_status)
 
