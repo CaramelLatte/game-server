@@ -62,7 +62,6 @@ def update_status():
         game.check_if_running()
         if game.running == True:
             active_server = game.name
-            empty_time = datetime.datetime.now()
             if game.log_file["file"] is not None:
                 file = open(game.log_file["file"], 'r')
                 for line in file:
@@ -74,6 +73,8 @@ def update_status():
                         parsed_name = line[game.log_file["splice_start"]:].strip("\n").replace(game.log_file["disconnect"], "").replace(" ", "")
                         if parsed_name in connected_players:
                             connected_players.remove(parsed_name)
+                    if len(connected_players) >= max_empty_time and max_empty_time > 0:
+                        empty_time = datetime.datetime.now()
                 file.close()
     if active_server == "":
         for player in connected_players:
