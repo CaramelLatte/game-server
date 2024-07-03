@@ -86,7 +86,7 @@ def update_status():
         difference = (empty_check.minute + (empty_check.hour * 60)) - (empty_time.minute + (empty_time.hour * 60))
         if difference >= max_empty_time:
             for game in game_list:
-                if game.running == True:
+                if game.running == True and game.log_file["file"] is not None:
                     game.exec_cmd("stop")
             empty_time = datetime.datetime.now()
 
