@@ -13,7 +13,7 @@ delay_time = datetime.datetime.now()
 connected_players = [] 
 lease_time = 0 #value in minutes to block additional start/stop commands after a new game server instance is begun. 0 means server will allow all start/stop commands always.
 empty_time = datetime.datetime.now()
-max_empty_time = 1 #value in minutes to allow server to be empty before stopping it. 0 means server will never stop due to inactivity.
+max_empty_time = 20 #value in minutes to allow server to be empty before stopping it. 0 means server will never stop due to inactivity.
 
 #function used to check if server lease time has elapsed
 def checktime():
