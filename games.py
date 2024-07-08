@@ -15,9 +15,7 @@ def parse_text(text):
                 char = char.lower()
                 keyboard.press_and_release(f"shift+{char}")
         elif char in special_chars.keys():
-            keyboard.press("shift")
-            keyboard.press(char)
-            keyboard.release("shift")
+            keyboard.press_and_release(f"shift+{special_chars[char]}")
         else:
             keyboard.write(char)
 
@@ -72,3 +70,6 @@ game_list.append(minecraft_serv)
 game_list.append(val_serv)
 game_list.append(seven_days_serv)
 game_list.append(pal_server)
+
+if __name__ == '__main__':
+    parse_text("&&")
