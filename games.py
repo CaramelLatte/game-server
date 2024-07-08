@@ -50,7 +50,7 @@ class GameServer:
                 keyboard.press_and_release("enter")
             else:
                 return (f"{self.name} already running")
-            hotkeys = ["ctrl", "shift", "alt"]
+        hotkeys = ["ctrl", "shift", "alt"]
         for key in hotkeys:
             if key in self.cmds[command]:
                 hotkey = self.cmds[command].split(",")
