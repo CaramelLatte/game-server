@@ -13,7 +13,7 @@ delay_time = datetime.datetime.now()
 connected_players = [] 
 lease_time = 0 #value in minutes to block additional start/stop commands after a new game server instance is begun. 0 means server will allow all start/stop commands always.
 empty_time = datetime.datetime.now()
-max_empty_time = 1 #value in minutes to allow server to be empty before stopping it. 0 means server will never stop due to inactivity.
+max_empty_time = 0 #value in minutes to allow server to be empty before stopping it. 0 means server will never stop due to inactivity.
 
 #function used to check if server lease time has elapsed
 def checktime():
@@ -86,7 +86,7 @@ def update_status():
         difference = (empty_check.minute + (empty_check.hour * 60)) - (empty_time.minute + (empty_time.hour * 60))
         if difference >= max_empty_time:
             for game in game_list:
-                if game.running == True and game.log_file["file"] is not None:
+                if game.running == True:
                     game.exec_cmd("stop")
             empty_time = datetime.datetime.now()
 
