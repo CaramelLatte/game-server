@@ -66,11 +66,11 @@ def update_status():
                 file = open(game.log_file["file"], 'r')
                 for line in file:
                     if game.log_file["connect"] in line:
-                        parsed_name = line[game.log_file["splice_start"]:game.log_file["splice_end"]].strip("\n")
+                        parsed_name = line[game.log_file["splice_start"]:game.log_file["splice_join_end"]].strip("\n")
                         if not parsed_name in connected_players:
                             connected_players.append(parsed_name)
                     elif game.log_file["disconnect"] in line:
-                        parsed_name = line[game.log_file["splice_start"]:game.log_file["splice_end"]].strip("\n")
+                        parsed_name = line[game.log_file["splice_start"]:game.log_file["splice_left_end"]].strip("\n")
                         if parsed_name in connected_players:
                             connected_players.remove(parsed_name)
                 if len(connected_players) >= max_empty_time and max_empty_time > 0:
