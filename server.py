@@ -74,7 +74,7 @@ def update_status():
                         parsed_name = line[game.log_file["splice_start"]:game.log_file["splice_left_end"]].strip("\n")
                         if parsed_name in connected_players:
                             connected_players.remove(parsed_name)
-                if len(connected_players) >= max_empty_time and max_empty_time > 0:
+                if len(connected_players) > 0 and max_empty_time > 0:
                     empty_time = datetime.datetime.now()
                 file.close()
     if active_server == "":
