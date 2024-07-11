@@ -81,6 +81,7 @@ def update_status():
         for player in connected_players:
             connected_players.remove(player)
         delay = False
+        empty_time = datetime.datetime.now()
         
     if max_empty_time > 0 and len(connected_players) == 0 and active_server != "":
         empty_check = datetime.datetime.now()
