@@ -7,6 +7,7 @@ def clear_terminal_inputs():
     time.sleep(1)
 
 #Keyboard module is used to emulate key presses to send commands to already-active terminal processes. Because emulated keys for capital letters and characters accessed by shift key don't physically exist on keyboard, this function can be used to enter special characters if necessary.
+#CURRENTLY DOES NOT WORK IN LINUX ENVIRONMENT - Observed behavior is that using the shift key through the keyboard module in Linux will result in locking keyboard inputs into the shift layer, which breaks all further inputs. Unsure if this is a fixable bug or a limitation of the module.
 def parse_text(text):
     special_chars = {"~":"`","!":"1","@":"2","#":"3","$":"4","%":"5","^":"6","&":"7","*":"8","(":"9",")":"0","_":"-","+":"=","<":",",">":".","?":"/","{":"[",", }":"]","|":"\\"}
     for char in text:
@@ -18,15 +19,17 @@ def parse_text(text):
             keyboard.press_and_release(f"shift+{special_chars[char]}")
         else:
             keyboard.write(char)
-
+#GameServer class is used to store information about game servers, such as name(string), icon(filename string sans extension), ports(list), path(string), log file(string), and commands to start and stop the server. Additional commands may be added to any individual game server to make use of functionality made available through that game's own server software.
+# 
+# The class also has a method to check if the server is running, and a method to execute a command on the server. 
 class GameServer:
     def __init__(self, name, icon, port, path, log_file, cmds) -> None:
-        self.name = name
-        self.icon = icon
-        self.ports = port
-        self.path = path
-        self.log_file = log_file
-        self.cmds = cmds
+        self.name = name #String, name of the game server
+        self.icon = icon #string, filename sans extension of the game server icon
+        self.ports = port #List, ports used by the game server. This is used to check if the port is listening to determine if the server is running.
+        self.path = path #string, path to the game server's main directory
+        self.log_file = log_file #dictionary, contains information about the game server's log file, including the file path, the string that indicates a player has connected, the string that indicates a player has disconnected, and the splice points to extract the player name from the log file. 
+        self.cmds = cmds #dictionary, contains the commands to start and stop the game server. Additional commands may be added to this dictionary to make use of additional functionality provided by the game server software. The start command may be either a single string or a list of strings, this is used to start a server in the instance where a single command is impractical.
         self.running = False
 
     def check_if_running(self):
@@ -64,7 +67,8 @@ class GameServer:
             parse_text(self.cmds[command])
         keyboard.press_and_release("enter")
         return command
-    
+
+#Define the game list and add individual game server objects to it. Refer to the GameServer class for more information on the parameters required to create a new game server object.
 game_list = []
 
 minecraft_serv = GameServer("Minecraft", "minecraft", [25565], "/home/gameserver/minecraft/", {"file": "/home/gameserver/minecraft/logs/latest.log",  "connect": "joined the game", "disconnect": "left the game", "splice_start": 33, "splice_join_end": -13, "splice_left_end": -13}, {"start": "java -jar server.jar nogui", "stop": "/stop"})

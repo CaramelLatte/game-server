@@ -49,6 +49,7 @@ class RepeatedTimer(object):
         self.is_running = False
 
 #Function to periodically check if a server is running, and if so, to pull from game's most recent log data to determine connected players
+#this function also checks if the server has been empty for a set amount of time, and if so, sets a timer to stop the server
 def update_status():
     checktime()
     global delay
