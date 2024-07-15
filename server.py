@@ -147,7 +147,7 @@ def exec_cmd_on_game(gameid, cmd):
 if __name__ == "__main__":
     try:
       print("Attempting to start HTTPS server.")
-      app.run(ssl_context=('/etc/letsencrypt/archive/games.caramellatte.dev/fullchain1.pem', '/etc/letsencrypt/archive/games.caramellatte.dev/privkey1.pem'), host="0.0.0.0", port=8080)
+      app.run(ssl_context=('/etc/letsencrypt/archive/games.caramellatte.dev/fullchain3.pem', '/etc/letsencrypt/archive/games.caramellatte.dev/privkey3.pem'), host="0.0.0.0", port=8080)
     except:
         print("Server cannot start, aborting")
 
