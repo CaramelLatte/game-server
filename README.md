@@ -11,6 +11,16 @@ Changes planned:
 
 implement API key checking to only allow validated users to issue commands
 
+Consider changing server management to using docker containers -
+Pros:
+- Easier maintenance and updating of individual servers
+- Adding new games becomes simpler - as long as a docker container exists, downloading it and adding the relevant entries to games.py will be sufficient
+- No further logic needed to handle running servers that require wine or other special dependancies - docker will automate this as part of its build process
+
+Cons:
+- Docker containers tend to have longer startup times than operating files sitting on the bare file system. This leads to a worse user experience and more resource consumption.
+- Previous experience has shown that persistent storage can be problematic if containers are not set up properly. As an example of this, a test with a docker container for V Rising resulted in saved data being lost on every container restart. If this problem ends up being more common with docker containers, additional functions to automatically back-up save data will be required to handle it.
+
 Games to add:
 V Rising
 Palworld
