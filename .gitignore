@@ -1,3 +1,5 @@
 running_jobs.txt
 test.py
 __pycache__
+server-docker.py
+games-docker.py
