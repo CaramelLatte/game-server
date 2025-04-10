@@ -46,4 +46,4 @@ def exec_cmd_on_game(gameid, cmd):
     return json.dumps({"error": "Game not found"})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    app.run(ssl_context=('/etc/letsencrypt/archive/games.caramellatte.dev/fullchain6.pem', '/etc/letsencrypt/archive/games.caramellatte.dev/privkey6.pem'), host="0.0.0.0", port=8080)
