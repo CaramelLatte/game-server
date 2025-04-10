@@ -79,7 +79,7 @@ seven_days_serv = GameServer(
     "7days",
     [26900, 26901, 26902],
     "didstopia/7dtd-server",
-    "7days_server"
+    "7days_server",
     {},
     "/home/gameserver/minecraft/"
 )
