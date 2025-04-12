@@ -2,10 +2,11 @@ import docker
 import os
 
 class GameServer:
-    def __init__(self, name, icon, ports, image, container_name, env_vars=None, volume=None) -> None:
+    def __init__(self, name, icon, ports, protocol, image, container_name, env_vars=None, volume=None) -> None:
         self.name = name  # String, name of the game server
         self.icon = icon  # String, filename sans extension of the game server icon
         self.ports = ports  # List, ports used by the game server
+        self.protocol = protocol # String, protocol used by the game server (e.g., "tcp", "udp")
         self.image = image  # String, Docker image name
         self.container_name = container_name  # String, Docker container name
         self.env_vars = env_vars or {}  # Dictionary, environment variables for the container
@@ -29,7 +30,7 @@ class GameServer:
                 self.client.containers.run(
                     self.image,
                     name=self.container_name,
-                    ports={f"{port}/tcp": port for port in self.ports},
+                    ports={f"{port}/{self.protocol}": port for port in self.ports},
                     environment=self.env_vars,
                     volumes={
                         self.volume: {
@@ -68,7 +69,8 @@ minecraft_serv = GameServer(
 val_serv = GameServer(
     "Valheim",
     "valheim",
-    [2456],
+    [2456, 2457],
+    "udp",
     "lloesche/valheim-server",
     "valheim_server",
     {"SERVER_NAME": "ValheimServer", "WORLD_NAME": "MyWorld", "SERVER_PASS": "secret"},
