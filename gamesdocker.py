@@ -68,7 +68,7 @@ minecraft_serv = GameServer(
 val_serv = GameServer(
     "Valheim",
     "valheim",
-    [2456, 2457],
+    [2456],
     "lloesche/valheim-server",
     "valheim_server",
     {"SERVER_NAME": "ValheimServer", "WORLD_NAME": "MyWorld", "SERVER_PASS": "secret"},
