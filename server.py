@@ -61,5 +61,4 @@ def exec_cmd_on_game(gameid, cmd):
 if __name__ == "__main__":
     chain = os.getenv("SSL_CHAIN")
     privkey = os.getenv("SSL_PRIVKEY")
-    print(chain, privkey)
     app.run(ssl_context=('/etc/letsencrypt/archive/games.caramellatte.dev/fullchain6.pem', '/etc/letsencrypt/archive/games.caramellatte.dev/privkey6.pem'), host="0.0.0.0", port=8080)
