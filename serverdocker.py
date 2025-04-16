@@ -18,7 +18,7 @@ def serv_stats():
             "name": game.name,
             "icon": game.icon,
             "status": game.running,
-            "ports": game.ports
+            "ports": game.ports[0]
         })
     return json.dumps({
         "active_server": active_server,
@@ -27,6 +27,16 @@ def serv_stats():
         "games": server_list
     })
 
+@app.route('/image/<gameid>')
+def return_image(gameid):
+    for game in game_list:
+        if game.name.lower() == gameid.lower():
+            image_path = f"static/{game.icon}.png"
+            return send_file(image_path, mimetype='image/png')
+    return "No image found"
+
+
+#Server commands presently only support start and stop. More commands will be added specific to each game at a later date.
 @app.route('/<gameid>/<cmd>')
 def exec_cmd_on_game(gameid, cmd):
     global active_server

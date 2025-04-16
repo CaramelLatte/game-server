@@ -25,7 +25,6 @@ class GameServer:
         if command == "start":
             if not self.running:
 
-                # host_path = os.path.abspath("./mc_test").replace('\\', '/')
                 self.client.containers.run(
                     self.image,
                     name=self.container_name,
