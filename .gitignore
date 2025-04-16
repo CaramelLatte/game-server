@@ -1,3 +1,6 @@
 running_jobs.txt
 test.py
 __pycache__
+.env
+server.old.py
+games.old.py
