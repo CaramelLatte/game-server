@@ -18,7 +18,7 @@ def serv_stats():
             "name": game.name,
             "icon": game.icon,
             "status": game.running,
-            "ports": game.ports[0]
+            "port": game.ports[0]
         })
     return json.dumps({
         "active_server": active_server,
