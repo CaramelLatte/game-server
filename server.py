@@ -41,14 +41,7 @@ def update():
 @app.route('/update')
 def serv_stats():
     server_list = []
-    for game in game_list:
-        game.check_if_running()
-        server_list.append({
-            "name": game.name,
-            "icon": game.icon,
-            "status": game.running,
-            "port": game.ports[0]
-        })
+    update()
     return json.dumps({
         "active_server": active_server,
         "player_count": len(connected_players),
