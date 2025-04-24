@@ -113,7 +113,7 @@ seven_days_serv = GameServer(
     "didstopia/7dtd-server",
     "7days_server",
     {},
-    "/home/gameserver/minecraft/"
+    "/home/gameserver/7-days-to-die/"
 )
 pal_server = GameServer(
     "Palworld",
