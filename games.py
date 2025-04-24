@@ -28,7 +28,7 @@ class GameServer:
                 parsed_name = line[self.log_params["splice_left_start"]:self.log_params["splice_left_end"]]
                 if parsed_name in connected_players:
                     connected_players.remove(parsed_name)
-        return []
+        return connected_players
 
     def check_if_running(self):
         try:
