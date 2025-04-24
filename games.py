@@ -92,7 +92,7 @@ minecraft_serv = GameServer(
         "splice_join_start": 33,
         "splice_left_start": 33,
         "splice_join_end": -16,
-        "splice_left_end": -16
+        "splice_left_end": -14
     }
 )
 val_serv = GameServer(
