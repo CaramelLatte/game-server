@@ -116,7 +116,15 @@ seven_days_serv = GameServer(
     "didstopia/7dtd-server",
     "7days_server",
     {},
-    "/home/gameserver/7-days-to-die/"
+    "/home/gameserver/7-days-to-die/",
+    {
+        "connect": "' joined the game",
+        "disconnect": "' left the game",
+        "splice_join_start": 49,
+        "splice_left_start": 49,
+        "splice_join_end": -14,
+        "splice_left_end": -14
+    }
 )
 pal_server = GameServer(
     "Palworld",
