@@ -32,7 +32,7 @@ def update():
             else:
                 empty_time = datetime.datetime.now()
 
-    if active_server == "" and (datetime.datetime.now() - empty_time).total_seconds() / 60 >= max_empty_time:
+    if len(connected_players) == 0 and (datetime.datetime.now() - empty_time).total_seconds() / 60 >= max_empty_time:
         for game in game_list:
             if game.running:
                 game.exec_cmd("stop")
