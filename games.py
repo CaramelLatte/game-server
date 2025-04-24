@@ -89,8 +89,8 @@ minecraft_serv = GameServer(
         "disconnect": "left the game",
         "splice_join_start": 33,
         "splice_left_start": 33,
-        "splice_join_end": -13,
-        "splice_left_end": -13
+        "splice_join_end": -16,
+        "splice_left_end": -16
     }
 )
 val_serv = GameServer(
