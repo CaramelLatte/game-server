@@ -120,10 +120,10 @@ seven_days_serv = GameServer(
     {
         "connect": "' joined the game",
         "disconnect": "' left the game",
-        "splice_join_start": 49,
-        "splice_left_start": 49,
-        "splice_join_end": -14,
-        "splice_left_end": -14
+        "splice_join_start": 46,
+        "splice_left_start": 46,
+        "splice_join_end": -17,
+        "splice_left_end": -15
     }
 )
 pal_server = GameServer(
