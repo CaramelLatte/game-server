@@ -11,6 +11,7 @@ dotenv.load_dotenv()
 active_server = ""
 connected_players = []
 max_empty_time = 20  # value in minutes to allow server to be empty before stopping it. 0 means server will never stop due to inactivity.
+empty_time = datetime.datetime.now()
 
 def update():
     global active_server
@@ -36,12 +37,19 @@ def update():
             if game.running:
                 game.exec_cmd("stop")
                 break
-        empty_time = datetime.datetime.now()
 
 @app.route('/update')
 def serv_stats():
     server_list = []
     update()
+    for game in game_list:
+        game.check_if_running()
+        server_list.append({
+            "name": game.name,
+            "icon": game.icon,
+            "status": game.running,
+            "port": game.ports[0]
+        })
     return json.dumps({
         "active_server": active_server,
         "player_count": len(connected_players),
