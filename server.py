@@ -10,7 +10,33 @@ CORS(app)
 dotenv.load_dotenv()
 active_server = ""
 connected_players = []
+max_empty_time = 20  # value in minutes to allow server to be empty before stopping it. 0 means server will never stop due to inactivity.
 
+def update():
+    global active_server
+    global connected_players
+    global empty_time
+    global max_empty_time
+
+    active_server = ""
+    connected_players = []
+
+    for game in game_list:
+        game.check_if_running()
+        if game.running:
+            active_server = game.name
+            players = game.get_connected_players()
+            if players:
+                connected_players.extend(players)
+            else:
+                empty_time = datetime.datetime.now()
+
+    if active_server == "" and (datetime.datetime.now() - empty_time).total_seconds() / 60 >= max_empty_time:
+        for game in game_list:
+            if game.running:
+                game.exec_cmd("stop")
+                break
+        empty_time = datetime.datetime.now()
 
 @app.route('/update')
 def serv_stats():

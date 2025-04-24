@@ -2,7 +2,7 @@ import docker
 import os
 
 class GameServer:
-    def __init__(self, name, icon, ports, protocol, image, container_name, env_vars=None, volume=None) -> None:
+    def __init__(self, name, icon, ports, protocol, image, container_name, env_vars=None, volume=None, log_params={}) -> None:
         self.name = name  # String, name of the game server
         self.icon = icon  # String, filename sans extension of the game server icon
         self.ports = ports  # List, ports used by the game server
@@ -11,8 +11,24 @@ class GameServer:
         self.container_name = container_name  # String, Docker container name
         self.env_vars = env_vars or {}  # Dictionary, environment variables for the container
         self.volume = volume  # String, Docker volume for persistent storage
+        self.log_params = log_params
         self.running = False
         self.client = docker.from_env()
+
+    def get_connected_players(self):
+        connected_players = []
+        container = self.client.containers.get(self.container_name)
+        logs = container.logs(stream=False)
+        for line in logs.decode('utf-8').splitlines():
+            if self.log_params["connect"] in line:
+                parsed_name = line[self.log_params["splice_join_start"]:self.log_params["splice_join_end"]]
+                if parsed_name not in connected_players:
+                    connected_players.append(parsed_name)
+            elif self.log_params["disconnect"] in line:
+                parsed_name = line[self.log_params["splice_left_start"]:self.log_params["splice_left_end"]]
+                if parsed_name in connected_players:
+                    connected_players.remove(parsed_name)
+        return []
 
     def check_if_running(self):
         try:
@@ -20,6 +36,7 @@ class GameServer:
             self.running = container.status == "running"
         except docker.errors.NotFound:
             self.running = False
+            
 
     def exec_cmd(self, command):
         self.check_if_running()
@@ -52,6 +69,8 @@ class GameServer:
                 return f"{self.name} is not running"
         else:
             return f"Unknown command: {command}"
+        
+
 
 # Define the game list and add individual game server objects to it
 game_list = []
@@ -64,7 +83,15 @@ minecraft_serv = GameServer(
     "itzg/minecraft-server",
     "minecraft_server",
     {"EULA": "TRUE"},
-    "/home/gameserver/minecraft/"
+    "/home/gameserver/minecraft/",
+    {
+        "connect": "joined the game",
+        "disconnect": "left the game",
+        "splice_join_start": 33,
+        "splice_left_start": 33,
+        "splice_join_end": -13,
+        "splice_left_end": -13
+    }
 )
 val_serv = GameServer(
     "Valheim",
