@@ -2,7 +2,7 @@ import docker
 import os
 
 class GameServer:
-    def __init__(self, name, icon, ports, protocol, image, container_name, env_vars=None, volume=None, log_params={}) -> None:
+    def __init__(self, name, icon, ports, protocol, image, container_name, env_vars=None, volume=None, log_params=None) -> None:
         self.name = name  # String, name of the game server
         self.icon = icon  # String, filename sans extension of the game server icon
         self.ports = ports  # List, ports used by the game server
@@ -16,6 +16,8 @@ class GameServer:
         self.client = docker.from_env()
 
     def get_connected_players(self):
+        if not self.log_params:
+            return []
         connected_players = []
         container = self.client.containers.get(self.container_name)
         logs = container.logs(stream=False)
