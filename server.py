@@ -11,7 +11,7 @@ CORS(app)
 dotenv.load_dotenv()
 active_server = ""
 connected_players = []
-max_empty_time = 20  # value in minutes to allow server to be empty before stopping it. 0 means server will never stop due to inactivity.
+max_empty_time = 2  # value in minutes to allow server to be empty before stopping it. 0 means server will never stop due to inactivity.
 empty_time = datetime.datetime.now()
 
 class RepeatedTimer(object):
