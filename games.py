@@ -2,34 +2,37 @@ import docker
 import os
 
 class GameServer:
-    def __init__(self, name, icon, ports, protocol, image, container_name, env_vars=None, volume=None, log_params=None) -> None:
+    def __init__(self, name, icon, ports, image, container_name, env_vars=None, volume=None, log_strings=None) -> None:
         self.name = name  # String, name of the game server
         self.icon = icon  # String, filename sans extension of the game server icon
         self.ports = ports  # List, ports used by the game server
-        #self.protocol = protocol # String, protocol used by the game server (e.g., "tcp", "udp")
         self.image = image  # String, Docker image name
         self.container_name = container_name  # String, Docker container name
         self.env_vars = env_vars or {}  # Dictionary, environment variables for the container
         self.volume = volume  # String, Docker volume for persistent storage
-        self.log_params = log_params
+        self.log_strings = log_strings
         self.running = False
         self.client = docker.from_env()
 
     def get_connected_players(self):
-        if not self.log_params:
+        if not self.log_strings:
             return []
         connected_players = []
         container = self.client.containers.get(self.container_name)
         logs = container.logs(stream=False)
-        for line in logs.decode('utf-8').splitlines():
-            if self.log_params["connect"] in line:
-                parsed_name = line[self.log_params["splice_join_start"]:self.log_params["splice_join_end"]]
-                if parsed_name not in connected_players:
-                    connected_players.append(parsed_name)
-            elif self.log_params["disconnect"] in line:
-                parsed_name = line[self.log_params["splice_left_start"]:self.log_params["splice_left_end"]]
-                if parsed_name in connected_players:
-                    connected_players.remove(parsed_name)
+        if logs:
+            log_lines = logs.decode('utf-8').split('\n')
+            for line in log_lines:
+                if self.log_strings["connect_head"] in line and self.log_strings["connect_tail"] in line:
+                    start = line.index(self.log_strings["connect_head"]) + len(self.log_strings["connect_head"])
+                    end = line.index(self.log_strings["connect_tail"])
+                    player_name = line[start:end].strip()
+                    connected_players.append(player_name)
+                elif self.log_strings["disconnect_head"] in line and self.log_strings["disconnect_tail"] in line:
+                    start = line.index(self.log_strings["disconnect_head"]) + len(self.log_strings["disconnect_head"])
+                    end = line.index(self.log_strings["disconnect_tail"])
+                    player_name = line[start:end].strip()
+                    connected_players.remove(player_name) if player_name in connected_players else None
         return connected_players
 
     def check_if_running(self):
@@ -90,12 +93,10 @@ minecraft_serv = GameServer(
     {"EULA": "TRUE"},
     "/home/gameserver/minecraft/",
     {
-        "connect": "joined the game",
-        "disconnect": "left the game",
-        "splice_join_start": 33,
-        "splice_left_start": 33,
-        "splice_join_end": -16,
-        "splice_left_end": -14
+        "connect_head": ": ",
+        "connect_tail": "joined the game",
+        "disconnect_head": ": ",
+        "disconnect_tail": "left the game",
     }
 )
 val_serv = GameServer(
@@ -120,10 +121,6 @@ seven_days_serv = GameServer(
     {
         "connect": "' joined the game",
         "disconnect": "' left the game",
-        "splice_join_start": 46,
-        "splice_left_start": 46,
-        "splice_join_end": -17,
-        "splice_left_end": -15
     }
 )
 pal_server = GameServer(
