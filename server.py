@@ -59,7 +59,6 @@ def update():
                 # empty_time = datetime.datetime.now()
                 continue
 
-    print(f"Connected players: {connected_players}, {len(connected_players)}")
     if max_empty_time > 0 and len(connected_players) == 0 and active_server != "":
         empty_check = datetime.datetime.now()
         difference = (empty_check.minute + (empty_check.hour * 60)) - (empty_time.minute + (empty_time.hour * 60))
