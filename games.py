@@ -50,11 +50,16 @@ class GameServer:
         self.check_if_running()
         if command == "start":
             if not self.running:
+                # Check if the image exists, pull it if not
+                images = self.client.images.list(name=self.image)
+                if not images:
+                    self.client.images.pull(self.image)
 
+                # Start the container
                 self.client.containers.run(
                     self.image,
                     name=self.container_name,
-                    ports={ 
+                    ports={
                         **{f"{port}/tcp": port for port in self.ports},
                         **{f"{port}/udp": port for port in self.ports}
                     },
@@ -72,9 +77,9 @@ class GameServer:
                 return f"{self.name} is already running"
         elif command == "stop":
             if self.running:
+                # Stop the container without removing it
                 container = self.client.containers.get(self.container_name)
                 container.stop()
-                container.remove()
                 return f"{self.name} stopped"
             else:
                 return f"{self.name} is not running"
