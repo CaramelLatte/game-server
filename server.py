@@ -57,12 +57,16 @@ def update():
                 empty_time = datetime.datetime.now()
 
     if len(connected_players) == 0 and (datetime.datetime.now() - empty_time).total_seconds() / 60 >= max_empty_time:
+        print(datetime.datetime.now())
+        print(empty_time)
+        print((datetime.datetime.now() - empty_time).total_seconds() / 60)
+        print(max_empty_time)
         for game in game_list:
             if game.running:
                 game.exec_cmd("stop")
                 break
 
-rt = RepeatedTimer(2, update) # Periodic update every 2 seconds
+rt = RepeatedTimer(2, update) # Periodic update every 2 minutes
 
 @app.route('/update')
 def serv_stats():
