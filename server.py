@@ -57,6 +57,7 @@ def update():
                 connected_players.extend(players)
             else:
                 # empty_time = datetime.datetime.now()
+                return
 
 
     if max_empty_time > 0 and len(connected_players) == 0 and active_server != "":
