@@ -56,17 +56,14 @@ def update():
             else:
                 empty_time = datetime.datetime.now()
 
-    print("Connected players:", len(connected_players))
-    print(datetime.datetime.now())
-    print(empty_time)
-    print((datetime.datetime.now() - empty_time).total_seconds() / 60)
-    print(max_empty_time)
-    if len(connected_players) == 0 and (datetime.datetime.now() - empty_time).total_seconds() / 60 >= max_empty_time:
-
-        for game in game_list:
-            if game.running:
-                game.exec_cmd("stop")
-                break
+    if max_empty_time > 0 and len(connected_players) == 0 and active_server != "":
+        empty_check = datetime.datetime.now()
+        difference = (empty_check.minute + (empty_check.hour * 60)) - (empty_time.minute + (empty_time.hour * 60))
+        if difference >= max_empty_time:
+            for game in game_list:
+                if game.running == True:
+                    game.exec_cmd("stop")
+            empty_time = datetime.datetime.now()
 
 rt = RepeatedTimer(2, update) # Periodic update every 2 minutes
 
