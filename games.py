@@ -116,9 +116,9 @@ seven_days_serv = GameServer(
     {},
     "/home/gameserver/7-days-to-die/",
     {
-        "connect_head": "' joined the game",
-        "connect_tail": "",
-        "disconnect_head": "' left the game",
+        "connect_head": "GMSG: Player '",
+        "connect_tail": "' joined the game",
+        "disconnect_head": "GMSG: Player '",
         "disconnect_tail": "' left the game",
     }
 )
