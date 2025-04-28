@@ -57,11 +57,12 @@ def update():
                 empty_time = datetime.datetime.now()
 
     print("Connected players:", len(connected_players))
+    print(datetime.datetime.now())
+    print(empty_time)
+    print((datetime.datetime.now() - empty_time).total_seconds() / 60)
+    print(max_empty_time)
     if len(connected_players) == 0 and (datetime.datetime.now() - empty_time).total_seconds() / 60 >= max_empty_time:
-        print(datetime.datetime.now())
-        print(empty_time)
-        print((datetime.datetime.now() - empty_time).total_seconds() / 60)
-        print(max_empty_time)
+
         for game in game_list:
             if game.running:
                 game.exec_cmd("stop")
