@@ -51,10 +51,13 @@ def update():
         if game.running:
             active_server = game.name
             players = game.get_connected_players()
-            if players:
+            if len(players) > 0:
+                # Update player list and reset empty time if players are found
+                empty_time = datetime.datetime.now()
                 connected_players.extend(players)
             else:
-                empty_time = datetime.datetime.now()
+                # empty_time = datetime.datetime.now()
+
 
     if max_empty_time > 0 and len(connected_players) == 0 and active_server != "":
         empty_check = datetime.datetime.now()
