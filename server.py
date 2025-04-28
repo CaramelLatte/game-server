@@ -13,6 +13,29 @@ connected_players = []
 max_empty_time = 20  # value in minutes to allow server to be empty before stopping it. 0 means server will never stop due to inactivity.
 empty_time = datetime.datetime.now()
 
+class RepeatedTimer(object):
+    def __init__(self, interval, function):
+        self._timer = None
+        self.interval = interval
+        self.function = function
+        self.is_running = False
+        self.start()
+    def _run(self):
+        self.is_running = False
+        self.start()
+        self.function()
+
+    def start(self):
+        if not self.is_running:
+            self._timer = Timer(self.interval, self._run)
+            self._timer.start()
+            self.is_running = True
+
+    def stop(self):
+        self._timer.cancel()
+        self.is_running = False
+
+
 def update():
     global active_server
     global connected_players
@@ -37,6 +60,8 @@ def update():
             if game.running:
                 game.exec_cmd("stop")
                 break
+
+rt = RepeatedTimer(2, update) # Periodic update every 2 seconds
 
 @app.route('/update')
 def serv_stats():
@@ -73,10 +98,23 @@ def exec_cmd_on_game(gameid, cmd):
     for game in game_list:
         if game.name.lower() == gameid.lower():
             result = game.exec_cmd(cmd)
-            if cmd == "start" and "started" in result:
-                active_server = game.name
-            elif cmd == "stop" and "stopped" in result:
-                active_server = ""
+            if cmd == "start":
+                # Only allow start if no other server is running
+                if active_server and active_server != game.name:
+                    return json.dumps({"error": "Another server is already running"})
+                if "started" in result:
+                    active_server = game.name
+                    empty_time = datetime.datetime.now()  # Reset empty time on server start
+            elif cmd == "stop":
+                if "stopped" in result:
+                    active_server = ""
+                    connected_players = []  # Clear player list when server stops
+
+            # Check for idle timeout after command execution
+            if len(connected_players) == 0 and (datetime.datetime.now() - empty_time).total_seconds() / 60 >= max_empty_time:
+                if game.running:
+                    game.exec_cmd("stop")
+                    active_server = ""
             return json.dumps({
                 "active_server": active_server,
                 "player_count": len(connected_players),
