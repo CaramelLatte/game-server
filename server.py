@@ -104,6 +104,7 @@ def return_image(gameid):
 @app.route('/<gameid>/<cmd>')
 def exec_cmd_on_game(gameid, cmd):
     global active_server
+    global connected_players
     for game in game_list:
         if game.name.lower() == gameid.lower():
             result = game.exec_cmd(cmd)
