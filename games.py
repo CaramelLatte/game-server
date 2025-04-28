@@ -87,7 +87,6 @@ minecraft_serv = GameServer(
     "Minecraft",
     "minecraft",
     [25565],
-    "tcp",
     "itzg/minecraft-server",
     "minecraft_server",
     {"EULA": "TRUE"},
