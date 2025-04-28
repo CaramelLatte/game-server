@@ -60,6 +60,11 @@ def update():
         empty_check = datetime.datetime.now()
         difference = (empty_check.minute + (empty_check.hour * 60)) - (empty_time.minute + (empty_time.hour * 60))
         print(f"Empty check difference: {difference} minutes")
+        print(f"empty_time: {empty_time}")
+        print(f"empty_check: {empty_check}")
+        print(f"max_empty_time: {max_empty_time} minutes")
+        print(f"connected_players: {connected_players}")
+        print(f"active_server: {active_server}")
         if difference >= max_empty_time:
             for game in game_list:
                 if game.running == True:
