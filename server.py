@@ -56,6 +56,7 @@ def update():
             else:
                 empty_time = datetime.datetime.now()
 
+    print("Connected players:", len(connected_players))
     if len(connected_players) == 0 and (datetime.datetime.now() - empty_time).total_seconds() / 60 >= max_empty_time:
         print(datetime.datetime.now())
         print(empty_time)
@@ -132,3 +133,5 @@ if __name__ == "__main__":
     chain = os.getenv("SSL_CHAIN")
     privkey = os.getenv("SSL_PRIVKEY")
     app.run(ssl_context=(chain, privkey), host="0.0.0.0", port=8080)
+
+rt.stop()  # Stop the timer when the script ends
