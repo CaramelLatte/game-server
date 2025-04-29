@@ -14,6 +14,7 @@ connected_players = []
 max_empty_time = 20  # value in minutes to allow server to be empty before stopping it. 0 means server will never stop due to inactivity.
 empty_time = datetime.datetime.now()
 
+# Timer class to run the update function periodically
 class RepeatedTimer(object):
     def __init__(self, interval, function):
         self._timer = None
@@ -38,6 +39,10 @@ class RepeatedTimer(object):
 
 
 def update():
+    # Function checks for the following:
+    # Active server
+    # Players connected to the active server
+    # If the server is empty for a certain amount of time, stop it
     global active_server
     global connected_players
     global empty_time
@@ -56,9 +61,8 @@ def update():
                 empty_time = datetime.datetime.now()
                 connected_players.extend(players)
             else:
-                # empty_time = datetime.datetime.now()
                 continue
-
+    
     if max_empty_time > 0 and len(connected_players) == 0 and active_server != "":
         empty_check = datetime.datetime.now()
         difference = (empty_check.minute + (empty_check.hour * 60)) - (empty_time.minute + (empty_time.hour * 60))
@@ -140,4 +144,4 @@ if __name__ == "__main__":
     privkey = os.getenv("SSL_PRIVKEY")
     app.run(ssl_context=(chain, privkey), host="0.0.0.0", port=8080)
 
-rt.stop()  # Stop the timer when the script ends
+rt.stop()  # Stop the timer when the script ends. Server behaves weirdly if you don't do this.

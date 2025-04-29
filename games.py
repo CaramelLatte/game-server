@@ -3,9 +3,14 @@ import os
 import requests
 
 def get_steam_username(steam_id, api_key):
+    #Fetches the Steam username for a given Steam ID using the Steam API.
+    
+    # Check if the API key is set in the environment variables
     api_key= os.getenv("STEAM_API_KEY")
     if not api_key:
         raise ValueError("Steam API key not found. Please set the STEAM_API_KEY environment variable.")
+    
+    
     url = f"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={api_key}&steamids={steam_id}"
     response = requests.get(url)
     data = response.json()
@@ -24,11 +29,13 @@ class GameServer:
         self.container_name = container_name  # String, Docker container name
         self.env_vars = env_vars or {}  # Dictionary, environment variables for the container
         self.volume = volume  # String, Docker volume for persistent storage
-        self.log_strings = log_strings
-        self.running = False
-        self.client = docker.from_env()
+        self.log_strings = log_strings ## Dictionary, log strings for player connection/disconnection, as well as a line to indicate a new instance of server has been launched
+        self.running = False 
+        self.client = docker.from_env() # Initialize Docker client
 
     def get_connected_players(self):
+        # Fetches the list of connected players from the game server logs.
+        # This method uses the log strings defined in the log_strings dictionary to parse the logs and extract player names.
         if not self.log_strings:
             return []
         connected_players = []
@@ -37,11 +44,15 @@ class GameServer:
         if logs:
             log_lines = logs.decode('utf-8').split('\n')
             
+            # Log files are persistent across container restarts, so we use a string generated early in the server's lifetime to determine if the server has been restarted, so that we can clear old player names from the list.
+            # This is a workaround to handle instances of players connecting previously, with no associated disconnection events logged, in the case of a server shutdown.
             for line in log_lines:
                 if self.log_strings["new_instance"] in line:
                     for player in connected_players:
                         connected_players.remove(player)
 
+                # Check for player connection and disconnection events. We use string slicing to extract the player name from the log line between the connect/disconnect head/tail strings.
+                # In instances where there is no tail to check (the server log line ends with player name, with nothing to handle as a tail), we check for the head string only, and slice the line from the head string to the end of the line.
                 if len(self.log_strings["connect_tail"]) == 0:
                     if self.log_strings["connect_head"] in line:
                         start = line.index(self.log_strings["connect_head"]) + len(self.log_strings["connect_head"])
@@ -63,7 +74,7 @@ class GameServer:
                     end = line.index(self.log_strings["disconnect_tail"])
                     player_name = line[start:end].strip()
                     connected_players.remove(player_name) if player_name in connected_players else None
-
+        #Check for steamIDs in the connected players list, and replace them with the corresponding steam usernames using the Steam API.
         for player in connected_players:
             if player.isdigit():
                 steam_username = get_steam_username(player, os.getenv("STEAM_API_KEY"))
@@ -97,11 +108,12 @@ class GameServer:
                     if not images:
                         self.client.images.pull(self.image)
 
-                    # Create and start a new container
+                    # Create and start a new container with associated arguments
                     self.client.containers.run(
                         self.image,
                         name=self.container_name,
                         ports={
+                            # Here we bind both TCP and UDP ports, to handle instances where a server utilizes both protocols (7 days to die does this, as an example)
                             **{f"{port}/tcp": port for port in self.ports},
                             **{f"{port}/udp": port for port in self.ports}
                         },
@@ -126,6 +138,8 @@ class GameServer:
             else:
                 return f"{self.name} is not running"
         else:
+            # Placeholder, more commands can be added using docker exec to run commands inside the container.
+            # For example, you could add additional commands for each game server, like toggling weather effects in Minecraft or changing the game mode in Valheim.
             return f"Unknown command: {command}"
         
 
@@ -133,6 +147,7 @@ class GameServer:
 # Define the game list and add individual game server objects to it
 game_list = []
 
+# Refer to the GameServer class for more information on the parameters required to create a new game server object.
 minecraft_serv = GameServer(
     "Minecraft",
     "minecraft",
