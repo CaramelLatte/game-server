@@ -82,8 +82,8 @@ class GameServer:
                 if steam_username:
                     connected_players[connected_players.index(player)] = steam_username
                 else:
-                    connected_players[connected_players.index(player)] = f"Unknown Player ({player})"
-        return connected_players
+                    pass
+                return connected_players
 
     def check_if_running(self):
         try:
