@@ -1,5 +1,20 @@
 import docker
 import os
+import requests
+import dotenv
+
+def get_steam_username(steam_id, api_key):
+    api_key= os.getenv("STEAM_API_KEY")
+    if not api_key:
+        raise ValueError("Steam API key not found. Please set the STEAM_API_KEY environment variable.")
+    url = f"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={api_key}&steamids={steam_id}"
+    response = requests.get(url)
+    data = response.json()
+    
+    if data['response']['players']:
+        return data['response']['players'][0]['personaname']
+    else:
+        return None
 
 class GameServer:
     def __init__(self, name, icon, ports, image, container_name, env_vars=None, volume=None, log_strings=None) -> None:
@@ -49,6 +64,14 @@ class GameServer:
                     end = line.index(self.log_strings["disconnect_tail"])
                     player_name = line[start:end].strip()
                     connected_players.remove(player_name) if player_name in connected_players else None
+
+        for player in connected_players:
+            if player.isdigit():
+                steam_username = get_steam_username(player, os.getenv("STEAM_API_KEY"))
+                if steam_username:
+                    connected_players[connected_players.index(player)] = steam_username
+                else:
+                    connected_players[connected_players.index(player)] = f"Unknown Player ({player})"
         return connected_players
 
     def check_if_running(self):
