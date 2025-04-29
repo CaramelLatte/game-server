@@ -23,7 +23,7 @@ class GameServer:
         if logs:
             log_lines = logs.decode('utf-8').split('\n')
             for line in log_lines:
-                if "Running as user: docker" in line:
+                if self.log_strings["new_instance"] in line:
                     for player in connected_players:
                         connected_players.remove(player)
                 if self.log_strings["connect_head"] in line and self.log_strings["connect_tail"] in line:
@@ -135,6 +135,7 @@ seven_days_serv = GameServer(
         "connect_tail": "' joined the game",
         "disconnect_head": "GMSG: Player '",
         "disconnect_tail": "' left the game",
+        "new_instance": "Running as user: docker",
     }
 )
 pal_server = GameServer(
@@ -144,7 +145,14 @@ pal_server = GameServer(
     "kagurazakanyaa/palworld",
     "palworld_server",
     {},
-    "/home/gameserver/palworld/"
+    "/home/gameserver/palworld/",
+    {
+        "connect_head": "[Log] ",
+        "connect_tail": "  joined the server",
+        "disconnect_head": "[Log] ",
+        "disconnect_tail": " left the server",
+        "new_instance": "Running  Palworld dedicated server",
+    }
 )
 
 game_list.append(minecraft_serv)
