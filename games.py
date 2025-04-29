@@ -21,16 +21,16 @@ class GameServer:
         connected_players = []
         container = self.client.containers.get(self.container_name)
         logs = container.logs(stream=False)
-        print(logs)
         if logs:
             log_lines = logs.decode('utf-8').split('\n')
             
             for line in log_lines:
-                print(line)
                 if self.log_strings["new_instance"] in line:
                     for player in connected_players:
                         connected_players.remove(player)
                 if self.log_strings["connect_head"] in line and self.log_strings["connect_tail"] in line:
+                    print("Found connect string")
+                    print(line)
                     start = line.index(self.log_strings["connect_head"]) + len(self.log_strings["connect_head"])
                     end = line.index(self.log_strings["connect_tail"])
                     player_name = line[start:end].strip()
