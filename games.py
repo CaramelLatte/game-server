@@ -151,7 +151,7 @@ pal_server = GameServer(
         "connect_tail": "  joined the server",
         "disconnect_head": "[Log] ",
         "disconnect_tail": " left the server",
-        "new_instance": "Running  Palworld dedicated server",
+        "new_instance": "Running Palworld dedicated server",
     }
 )
 
