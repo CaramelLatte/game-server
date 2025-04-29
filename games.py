@@ -29,8 +29,6 @@ class GameServer:
                     for player in connected_players:
                         connected_players.remove(player)
                 if self.log_strings["connect_head"] in line and self.log_strings["connect_tail"] in line:
-                    print("Found connect string")
-                    print(line)
                     start = line.index(self.log_strings["connect_head"]) + len(self.log_strings["connect_head"])
                     end = line.index(self.log_strings["connect_tail"])
                     player_name = line[start:end].strip()
