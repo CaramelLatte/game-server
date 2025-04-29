@@ -74,7 +74,7 @@ def update():
                     active_server = ""
             empty_time = datetime.datetime.now()
 
-rt = RepeatedTimer(2, update) # Periodic update every 2 minutes
+rt = RepeatedTimer(10, update) # Periodic update every 2 minutes
 
 @app.route('/update')
 def serv_stats():
