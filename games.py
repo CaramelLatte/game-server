@@ -141,7 +141,7 @@ pal_server = GameServer(
     "Palworld",
     "palworld",
     [8211],
-    "jammsen/palworld-dedicated-server",
+    "thijsvanloef/palworld-server-docker",
     "palworld_server",
     {},
     "/home/gameserver/palworld/"
