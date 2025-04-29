@@ -122,7 +122,7 @@ val_serv = GameServer(
     "lloesche/valheim-server",
     "valheim_server",
     {"SERVER_NAME": "ValheimServer", "WORLD_NAME": "MyWorld", "SERVER_PASS": "secret"},
-    "/home/gameserver/valheim/"
+    "/home/gameserver/valheim/",
     {
         "connect_head": "Got handshake from client ",
         "connect_tail": "",
