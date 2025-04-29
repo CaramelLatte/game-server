@@ -33,12 +33,13 @@ class GameServer:
                         start = line.index(self.log_strings["connect_head"]) + len(self.log_strings["connect_head"])
                         player_name = line[start:].strip()
                         connected_players.append(player_name)
-                if self.log_strings["connect_head"] in line and self.log_strings["connect_tail"] in line:
+                elif self.log_strings["connect_head"] in line and self.log_strings["connect_tail"] in line:
                     start = line.index(self.log_strings["connect_head"]) + len(self.log_strings["connect_head"])
                     end = line.index(self.log_strings["connect_tail"])
                     player_name = line[start:end].strip()
                     connected_players.append(player_name)
-                elif len(self.log_strings["disconnect_tail"]) == 0:
+
+                if len(self.log_strings["disconnect_tail"]) == 0:
                     if self.log_strings["disconnect_head"] in line:
                         start = line.index(self.log_strings["disconnect_head"]) + len(self.log_strings["disconnect_head"])
                         player_name = line[start:].strip()
