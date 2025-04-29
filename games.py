@@ -152,7 +152,7 @@ pal_server = GameServer(
     {},
     "/home/gameserver/palworld/",
     {
-        "connect_head": "[LOG] ",
+        "connect_head": "\[LOG\] ",
         "connect_tail": "  joined the server",
         "disconnect_head": "[LOG] ",
         "disconnect_tail": " left the server",
