@@ -125,9 +125,9 @@ val_serv = GameServer(
     "/home/gameserver/valheim/",
     {
         "connect_head": "Got handshake from client ",
-        "connect_tail": "\n",
+        "connect_tail": "\\n",
         "disconnect_head": "Closing socket ",
-        "disconnect_tail": "\n",
+        "disconnect_tail": "\\n",
         "new_instance": "Starting Valheim server",
     }
 )
