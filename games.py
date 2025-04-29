@@ -111,6 +111,7 @@ minecraft_serv = GameServer(
         "connect_tail": "joined the game",
         "disconnect_head": ": ",
         "disconnect_tail": "left the game",
+        "new_instance": "Done (",
     }
 )
 val_serv = GameServer(
