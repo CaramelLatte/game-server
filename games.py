@@ -27,11 +27,22 @@ class GameServer:
                 if self.log_strings["new_instance"] in line:
                     for player in connected_players:
                         connected_players.remove(player)
+
+                if len(self.log_strings["connect_tail"]) == 0:
+                    if self.log_strings["connect_head"] in line:
+                        start = line.index(self.log_strings["connect_head"]) + len(self.log_strings["connect_head"])
+                        player_name = line[start:].strip()
+                        connected_players.append(player_name)
                 if self.log_strings["connect_head"] in line and self.log_strings["connect_tail"] in line:
                     start = line.index(self.log_strings["connect_head"]) + len(self.log_strings["connect_head"])
                     end = line.index(self.log_strings["connect_tail"])
                     player_name = line[start:end].strip()
                     connected_players.append(player_name)
+                elif len(self.log_strings["disconnect_tail"]) == 0:
+                    if self.log_strings["disconnect_head"] in line:
+                        start = line.index(self.log_strings["disconnect_head"]) + len(self.log_strings["disconnect_head"])
+                        player_name = line[start:].strip()
+                        connected_players.remove(player_name) if player_name in connected_players else None
                 elif self.log_strings["disconnect_head"] in line and self.log_strings["disconnect_tail"] in line:
                     start = line.index(self.log_strings["disconnect_head"]) + len(self.log_strings["disconnect_head"])
                     end = line.index(self.log_strings["disconnect_tail"])
@@ -125,9 +136,9 @@ val_serv = GameServer(
     "/home/gameserver/valheim/",
     {
         "connect_head": "Got handshake from client ",
-        "connect_tail": "\\n",
+        "connect_tail": "",
         "disconnect_head": "Closing socket ",
-        "disconnect_tail": "\\n",
+        "disconnect_tail": "",
         "new_instance": "Starting Valheim server",
     }
 )
