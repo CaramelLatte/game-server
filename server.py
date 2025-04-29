@@ -105,6 +105,8 @@ def return_image(gameid):
 def exec_cmd_on_game(gameid, cmd):
     global active_server
     global connected_players
+    global empty_time
+    global max_empty_time
     for game in game_list:
         if game.name.lower() == gameid.lower():
             result = game.exec_cmd(cmd)
