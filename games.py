@@ -16,7 +16,6 @@ class GameServer:
 
     def get_connected_players(self):
         if not self.log_strings:
-            print("No log strings found, skipping")
             return []
         connected_players = []
         container = self.client.containers.get(self.container_name)
