@@ -16,13 +16,17 @@ class GameServer:
 
     def get_connected_players(self):
         if not self.log_strings:
+            print("No log strings found, skipping")
             return []
         connected_players = []
         container = self.client.containers.get(self.container_name)
         logs = container.logs(stream=False)
+        print(logs)
         if logs:
             log_lines = logs.decode('utf-8').split('\n')
+            
             for line in log_lines:
+                print(line)
                 if self.log_strings["new_instance"] in line:
                     for player in connected_players:
                         connected_players.remove(player)
