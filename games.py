@@ -28,8 +28,9 @@ class GameServer:
         self.image = image  # String, Docker image name
         self.container_name = container_name  # String, Docker container name
         self.env_vars = env_vars or {}  # Dictionary, environment variables for the container
-        self.volume = volume  # String, Docker volume for persistent storage
-        self.log_strings = log_strings ## Dictionary, log strings for player connection/disconnection, as well as a line to indicate a new instance of server has been launched
+        self.volume = volume  # String, directory path to mount. The container will have its own working directory, we set an additional path to mount here to allow for files to persist between server restarts.
+        self.log_strings = log_strings # Dictionary, log strings for player connection/disconnection, as well as a line to indicate a new instance of server has been launched
+        # Important note - if the server log line ends with the player name for connect, disconnect, or both, there is no tail to check for. In this case, the tail should be set to an empty string.
         self.running = False 
         self.client = docker.from_env() # Initialize Docker client
 
