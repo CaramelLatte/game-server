@@ -1,7 +1,6 @@
 import docker
 import os
 import requests
-import dotenv
 
 def get_steam_username(steam_id, api_key):
     api_key= os.getenv("STEAM_API_KEY")
