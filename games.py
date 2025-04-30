@@ -223,11 +223,11 @@ vrising_serv = GameServer(
     {},
     "/home/gameserver/v-rising/",
     {
-        "connect_head": "[INFO] ",
-        "connect_tail": " has joined the game.",
-        "disconnect_head": "[INFO] ",
-        "disconnect_tail": " has left the game.",
-        "new_instance": "[INFO] Starting V Rising server...",
+        "connect_head": "BeginAuthSession for SteamID: ",
+        "connect_tail": " Result: ",
+        "disconnect_head": "EndAuthSession platformId: ",
+        "disconnect_tail": "",
+        "new_instance": "Launching wine64 V Rising",
     }
 )
 
