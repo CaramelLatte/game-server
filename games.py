@@ -83,7 +83,7 @@ class GameServer:
                     connected_players[connected_players.index(player)] = steam_username
                 else:
                     pass
-                return connected_players
+        return connected_players
 
     def check_if_running(self):
         try:
