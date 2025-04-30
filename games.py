@@ -214,7 +214,25 @@ pal_server = GameServer(
     }
 )
 
+vrising_serv = GameServer(
+    "V Rising",
+    "vrising",
+    [9876, 9877],
+    "trueosiris/vrising",
+    "vrising_server",
+    {},
+    "/home/gameserver/v-rising/",
+    {
+        "connect_head": "[INFO] ",
+        "connect_tail": " has joined the game.",
+        "disconnect_head": "[INFO] ",
+        "disconnect_tail": " has left the game.",
+        "new_instance": "[INFO] Starting V Rising server...",
+    }
+)
+
 game_list.append(minecraft_serv)
 game_list.append(val_serv)
 game_list.append(seven_days_serv)
 game_list.append(pal_server)
+game_list.append(vrising_serv)
