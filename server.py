@@ -49,6 +49,7 @@ def get_connected_players():
     # Function to get the list of connected players from the active server
     global active_server
     global connected_players
+    connected_players = []  # Reset the list of connected players
     for game in game_list:
         if game.name == active_server:
             players = game.get_connected_players()
@@ -95,12 +96,11 @@ def update():
     idle_timeout_check()
     perform_health_check()
 
-rt = RepeatedTimer(10, update) # Periodic update every 2 minutes
+rt = RepeatedTimer(10, update) # Periodic update every 10 seconds
 
 @app.route('/update')
 def serv_stats():
     server_list = []
-    update()
     for game in game_list:
         server_list.append({
             "name": game.name,
