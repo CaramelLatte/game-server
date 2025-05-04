@@ -5,6 +5,8 @@ import datetime
 import json
 import dotenv
 from threading import Timer
+import requests
+import subprocess
 
 app = Flask(__name__)
 CORS(app)
@@ -37,32 +39,31 @@ class RepeatedTimer(object):
         self._timer.cancel()
         self.is_running = False
 
+def get_server_status():
+    # Function to get the status of all servers
+    global game_list
+    for game in game_list:
+        game.check_if_running()
+        
+def get_connected_players():
+    # Function to get the list of connected players from the active server
+    global active_server
+    global connected_players
+    for game in game_list:
+        if game.name == active_server:
+            players = game.get_connected_players()
+            if players and len(players) > 0:
+                connected_players.extend(players)
+            else:
+                connected_players = []
 
-def update():
-    # Function checks for the following:
-    # Active server
-    # Players connected to the active server
-    # If the server is empty for a certain amount of time, stop it
+def idle_timeout_check():
+    # Function to check if the server is idle for a certain amount of time
     global active_server
     global connected_players
     global empty_time
     global max_empty_time
 
-    active_server = ""
-    connected_players = []
-
-    for game in game_list:
-        game.check_if_running()
-        if game.running:
-            active_server = game.name
-            players = game.get_connected_players()
-            if players and len(players) > 0:
-                # Update player list and reset empty time if players are found
-                empty_time = datetime.datetime.now()
-                connected_players.extend(players)
-            else:
-                continue
-    
     if max_empty_time > 0 and len(connected_players) == 0 and active_server != "":
         empty_check = datetime.datetime.now()
         difference = (empty_check.minute + (empty_check.hour * 60)) - (empty_time.minute + (empty_time.hour * 60))
@@ -74,6 +75,26 @@ def update():
                     active_server = ""
             empty_time = datetime.datetime.now()
 
+def perform_health_check():
+    try:
+        HEALTH_CHECK_URL = os.getenv("HEALTH_CHECK_URL")
+        if not HEALTH_CHECK_URL:
+            print("HEALTH_CHECK_URL not set in environment variables.")
+            return
+        request = requests.get(HEALTH_CHECK_URL, timeout=5)
+        if request.status_code != 200:
+            print("Health check failed!")
+            subprocess.run(["systemctl", "restart", "game-server.service"], check=True)
+    except requests.exceptions.RequestException as e:
+        print(f"Health check request failed: {e}")
+        subprocess.run(["systemctl", "restart", "game-server.service"], check=True)
+
+def update():
+    get_server_status()
+    get_connected_players()
+    idle_timeout_check()
+    perform_health_check()
+
 rt = RepeatedTimer(10, update) # Periodic update every 2 minutes
 
 @app.route('/update')
@@ -81,7 +102,6 @@ def serv_stats():
     server_list = []
     update()
     for game in game_list:
-        game.check_if_running()
         server_list.append({
             "name": game.name,
             "icon": game.icon,
@@ -138,6 +158,10 @@ def exec_cmd_on_game(gameid, cmd):
                 "result": result
             })
     return json.dumps({"error": "Game not found"})
+
+@app.route('/health')
+def health_check():
+    return json.dumps({"status": "ok"}), 200
 
 if __name__ == "__main__":
     chain = os.getenv("SSL_CHAIN")
