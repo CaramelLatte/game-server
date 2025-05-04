@@ -103,7 +103,6 @@ rt = RepeatedTimer(10, update) # Periodic update every 10 seconds
 
 @app.route('/update')
 def serv_stats():
-
     server_list = []
     for game in game_list:
         server_list.append({
