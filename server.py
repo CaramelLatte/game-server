@@ -42,9 +42,12 @@ class RepeatedTimer(object):
 def get_server_status():
     # Function to get the status of all servers
     global game_list
+    global active_server
     for game in game_list:
         game.check_if_running()
-        
+        if game.running:
+            active_server = game.name
+            break
 def get_connected_players():
     # Function to get the list of connected players from the active server
     global active_server
@@ -100,6 +103,7 @@ rt = RepeatedTimer(10, update) # Periodic update every 10 seconds
 
 @app.route('/update')
 def serv_stats():
+    update()
     server_list = []
     for game in game_list:
         server_list.append({
