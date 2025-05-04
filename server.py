@@ -150,11 +150,6 @@ def exec_cmd_on_game(gameid, cmd):
                     active_server = ""
                     connected_players = []  # Clear player list when server stops
 
-            # Check for idle timeout after command execution
-            if len(connected_players) == 0 and (datetime.datetime.now() - empty_time).total_seconds() / 60 >= max_empty_time:
-                if game.running:
-                    game.exec_cmd("stop")
-                    active_server = ""
             return json.dumps({
                 "active_server": active_server,
                 "player_count": len(connected_players),
