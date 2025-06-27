@@ -184,7 +184,7 @@ val_serv = GameServer(
 seven_days_serv = GameServer(
     "7 Days to Die",
     "7days",
-    [26900, 26901, 26902],
+    [26900, 26901, 26902, 26903],
     "didstopia/7dtd-server",
     "7days_server",
     {},
