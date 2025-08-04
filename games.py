@@ -240,6 +240,11 @@ terraria_serv = GameServer(
     {},
     "/home/gameserver/terraria/",
     {
+        "connect_head": "",
+        "connect_tail": " has joined",
+        "disconnect_head": "",
+        "disconnect_tail": " has left", 
+        "new_instance": ": Server Started",
     }
 )
 
