@@ -235,7 +235,7 @@ terraria_serv = GameServer(
     "Terraria",
     "terraria",
     [7777],
-    "beardedio/terraria",
+    "delath/terraria",
     "terraria_server",
     {},
     "/home/gameserver/terraria/",
