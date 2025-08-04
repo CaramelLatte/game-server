@@ -248,4 +248,5 @@ game_list.append(val_serv)
 game_list.append(seven_days_serv)
 game_list.append(pal_server)
 game_list.append(vrising_serv)
+game_list.append(terraria_serv)
 #PERSONAL NOTE: persistent data for these servers is stored at /var/lib/docker/volumes/, from here you can find the correct directory to enter by doing ls -lt, the optional flag to sort by date. When changing settings on a server, change them this way instead of the mirrored directory defined in the server object
