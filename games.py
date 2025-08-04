@@ -231,6 +231,18 @@ vrising_serv = GameServer(
     }
 )
 
+terraria_serv = GameServer(
+    "Terraria",
+    "terraria",
+    [7777],
+    "ryshe/terraria",
+    "terraria_server",
+    {},
+    "/home/gameserver/terraria/",
+    {
+    }
+)
+
 game_list.append(minecraft_serv)
 game_list.append(val_serv)
 game_list.append(seven_days_serv)
