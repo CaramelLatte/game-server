@@ -235,7 +235,7 @@ terraria_serv = GameServer(
     "Terraria",
     "terraria",
     [7777],
-    "delath/terraria",
+    "hexlo/terraria-tmodloader-server",
     "terraria_server",
     {},
     "/home/gameserver/terraria/",
