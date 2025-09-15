@@ -1,24 +1,10 @@
 import docker
 import os
-import requests
+from utils import get_steam_username
+import logging
 
-def get_steam_username(steam_id, api_key):
-    #Fetches the Steam username for a given Steam ID using the Steam API.
-    
-    # Check if the API key is set in the environment variables
-    api_key= os.getenv("STEAM_API_KEY")
-    if not api_key:
-        raise ValueError("Steam API key not found. Please set the STEAM_API_KEY environment variable.")
-    
-    
-    url = f"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={api_key}&steamids={steam_id}"
-    response = requests.get(url)
-    data = response.json()
-    
-    if data['response']['players']:
-        return data['response']['players'][0]['personaname']
-    else:
-        return None
+# Configure logging for the module
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class GameServer:
     def __init__(self, name, icon, ports, image, container_name, env_vars=None, volume=None, log_strings=None) -> None:
@@ -46,43 +32,50 @@ class GameServer:
             log_lines = logs.decode('utf-8').split('\n')
             
             # Log files are persistent across container restarts, so we use a string generated early in the server's lifetime to determine if the server has been restarted, so that we can clear old player names from the list.
-            # This is a workaround to handle instances of players connecting previously, with no associated disconnection events logged, in the case of a server shutdown.
             for line in log_lines:
                 if self.log_strings["new_instance"] in line:
+                    logging.info(f"New server instance detected for {self.name}. Clearing old player names.")
                     for player in connected_players:
                         connected_players.remove(player)
 
-                # Check for player connection and disconnection events. We use string slicing to extract the player name from the log line between the connect/disconnect head/tail strings.
-                # In instances where there is no tail to check (the server log line ends with player name, with nothing to handle as a tail), we check for the head string only, and slice the line from the head string to the end of the line.
+                # Check for player connection and disconnection events.
                 if len(self.log_strings["connect_tail"]) == 0:
                     if self.log_strings["connect_head"] in line:
                         start = line.index(self.log_strings["connect_head"]) + len(self.log_strings["connect_head"])
                         player_name = line[start:].strip()
                         connected_players.append(player_name)
+                        logging.info(f"Player connected: {player_name}")
                 elif self.log_strings["connect_head"] in line and self.log_strings["connect_tail"] in line:
                     start = line.index(self.log_strings["connect_head"]) + len(self.log_strings["connect_head"])
                     end = line.index(self.log_strings["connect_tail"])
                     player_name = line[start:end].strip()
                     connected_players.append(player_name)
+                    logging.info(f"Player connected: {player_name}")
 
                 if len(self.log_strings["disconnect_tail"]) == 0:
                     if self.log_strings["disconnect_head"] in line:
                         start = line.index(self.log_strings["disconnect_head"]) + len(self.log_strings["disconnect_head"])
                         player_name = line[start:].strip()
-                        connected_players.remove(player_name) if player_name in connected_players else None
+                        if player_name in connected_players:
+                            connected_players.remove(player_name)
+                            logging.info(f"Player disconnected: {player_name}")
                 elif self.log_strings["disconnect_head"] in line and self.log_strings["disconnect_tail"] in line:
                     start = line.index(self.log_strings["disconnect_head"]) + len(self.log_strings["disconnect_head"])
                     end = line.index(self.log_strings["disconnect_tail"])
                     player_name = line[start:end].strip()
-                    connected_players.remove(player_name) if player_name in connected_players else None
-        #Check for steamIDs in the connected players list, and replace them with the corresponding steam usernames using the Steam API.
+                    if player_name in connected_players:
+                        connected_players.remove(player_name)
+                        logging.info(f"Player disconnected: {player_name}")
+
+        # Check for Steam IDs in the connected players list, and replace them with the corresponding Steam usernames using the Steam API.
         for player in connected_players:
-            if player.isdigit():
-                steam_username = get_steam_username(player, os.getenv("STEAM_API_KEY"))
+            if player.isdigit() and len(player) == 17:  # Check if it's a 17-digit number (likely a Steam ID)
+                steam_username = get_steam_username(player)
                 if steam_username:
                     connected_players[connected_players.index(player)] = steam_username
+                    logging.info(f"Replaced Steam ID {player} with username {steam_username}")
                 else:
-                    pass
+                    logging.warning(f"Could not resolve Steam ID {player} to a username. Keeping the numeric ID as the player name.")
         return connected_players
 
     def check_if_running(self):
@@ -102,45 +95,40 @@ class GameServer:
                     container = self.client.containers.get(self.container_name)
                     # Start the existing container
                     container.start()
+                    logging.info(f"{self.name} server started.")
                     return f"{self.name} started"
                 except docker.errors.NotFound:
                     # If the container doesn't exist, check if the image exists and pull it if not
                     images = self.client.images.list(name=self.image)
                     if not images:
                         self.client.images.pull(self.image)
+                        logging.info(f"Pulled Docker image for {self.name} server.")
 
                     # Create and start a new container with associated arguments
                     self.client.containers.run(
                         self.image,
                         name=self.container_name,
-                        ports={
-                            # Here we bind both TCP and UDP ports, to handle instances where a server utilizes both protocols (7 days to die does this, as an example)
-                            **{f"{port}/tcp": port for port in self.ports},
-                            **{f"{port}/udp": port for port in self.ports}
-                        },
+                        ports={**{f"{port}/tcp": port for port in self.ports}, **{f"{port}/udp": port for port in self.ports}},
                         environment=self.env_vars,
-                        volumes={
-                            self.volume: {
-                                'bind': '/data',  # Target path in container
-                                'mode': 'rw'  # Read-write mode
-                            }
-                        },
+                        volumes={self.volume: {'bind': '/data', 'mode': 'rw'}},
                         detach=True,
                     )
+                    logging.info(f"{self.name} server container created and started.")
                     return f"{self.name} started"
             else:
+                logging.info(f"{self.name} is already running.")
                 return f"{self.name} is already running"
         elif command == "stop":
             if self.running:
-                # Stop the container without removing it
                 container = self.client.containers.get(self.container_name)
                 container.stop()
+                logging.info(f"{self.name} server stopped.")
                 return f"{self.name} stopped"
             else:
+                logging.info(f"{self.name} is not running.")
                 return f"{self.name} is not running"
         else:
-            # Placeholder, more commands can be added using docker exec to run commands inside the container.
-            # For example, you could add additional commands for each game server, like toggling weather effects in Minecraft or changing the game mode in Valheim.
+            logging.warning(f"Unknown command: {command}")
             return f"Unknown command: {command}"
         
 

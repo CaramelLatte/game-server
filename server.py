@@ -7,6 +7,8 @@ import dotenv
 from threading import Timer
 import requests
 import subprocess
+import os
+import logging
 
 app = Flask(__name__)
 CORS(app)
@@ -15,6 +17,9 @@ active_server = ""
 connected_players = []
 max_empty_time = 60  # value in minutes to allow server to be empty before stopping it. 0 means server will never stop due to inactivity.
 empty_time = datetime.datetime.now()
+
+# Configure logging for the module
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Timer class to run the update function periodically
 class RepeatedTimer(object):
@@ -73,9 +78,9 @@ def idle_timeout_check():
         difference = (empty_check.minute + (empty_check.hour * 60)) - (empty_time.minute + (empty_time.hour * 60))
         if difference >= max_empty_time:
             for game in game_list:
-                if game.running == True:
+                if game.running:
                     game.exec_cmd("stop")
-                    print(f"Server {game.name} stopped due to inactivity")
+                    logging.info(f"Server {game.name} stopped due to inactivity.")
                     active_server = ""
             empty_time = datetime.datetime.now()
 
@@ -83,14 +88,14 @@ def perform_health_check():
     try:
         HEALTH_CHECK_URL = os.getenv("HEALTH_CHECK_URL")
         if not HEALTH_CHECK_URL:
-            print("HEALTH_CHECK_URL not set in environment variables.")
+            logging.warning("HEALTH_CHECK_URL not set in environment variables.")
             return
         request = requests.get(HEALTH_CHECK_URL, timeout=5)
         if request.status_code != 200:
-            print("Health check failed!")
+            logging.error("Health check failed!")
             subprocess.run(["systemctl", "restart", "game-server.service"], check=True)
     except requests.exceptions.RequestException as e:
-        print(f"Health check request failed: {e}")
+        logging.error(f"Health check request failed: {e}")
         subprocess.run(["systemctl", "restart", "game-server.service"], check=True)
 
 def update():
@@ -138,23 +143,25 @@ def exec_cmd_on_game(gameid, cmd):
         if game.name.lower() == gameid.lower():
             result = game.exec_cmd(cmd)
             if cmd == "start":
-                # Only allow start if no other server is running
                 if active_server and active_server != game.name:
+                    logging.warning(f"Attempted to start {game.name} while {active_server} is already running.")
                     return json.dumps({"error": "Another server is already running"})
                 if "started" in result:
                     active_server = game.name
-                    empty_time = datetime.datetime.now()  # Reset empty time on server start
+                    empty_time = datetime.datetime.now()
+                    logging.info(f"{game.name} server started.")
             elif cmd == "stop":
                 if "stopped" in result:
                     active_server = ""
-                    connected_players = []  # Clear player list when server stops
-
+                    connected_players = []
+                    logging.info(f"{game.name} server stopped.")
             return json.dumps({
                 "active_server": active_server,
                 "player_count": len(connected_players),
                 "players": connected_players,
                 "result": result
             })
+    logging.error(f"Game {gameid} not found.")
     return json.dumps({"error": "Game not found"})
 
 @app.route('/health')
