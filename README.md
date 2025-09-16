@@ -17,7 +17,7 @@ Please note that you will need to have the appropriate game installed to actuall
 
 ## Usage
 - The server listens for HTTP requests at defined endpoints
-- Pair with a front-end to visualize server status and issue commands. To establish a quick and dirty way to interface with this server manager without first building a front-end UI, you may also simply direct your browser to the appropriate endpoints 'e.g. https://{local ip or domain name.tld}:{ip you set server to listen to, default 8080}/{gameid}/{cmd} or set up a post manager like postman or insomnia with the correct URLs to manually target endpoints.
+- Pair with a front-end to visualize server status and issue commands. To establish a quick and dirty way to interface with this server manager without first building a front-end UI, you may also simply direct your browser or a post manager like postman or insomnia to the appropriate endpoints for your setup - e.g. https://{local ip or domain name.tld}:{port you set server to listen to, default 8080}/{gameid}/{cmd}
 
 
 Adding new games is simple. In games.py, create a new instance of the GameServer object in the same style as the existing variables. The attributes of this object must be edited to match the specifics of the game name, port, path to executable, path to log file, identifying string flags for connection/disconnection messages (used to parse a list of connected users), and the commands you want to be able to issue to the process. You can add additional commands beyond what is shown, however you will also need to add logic to handle those commands as presently any commands other than 'start' and 'stop' reach an 'unknown command' error handling state.
