@@ -30,9 +30,12 @@ class RepeatedTimer:
         self.start()
 
     def _run(self) -> None:
-        self.is_running = False
-        self.start()
-        self.function()
+        try:
+            self.is_running = False
+            self.start()
+            self.function()
+        except Exception as e:
+            logging.error(f"Error in RepeatedTimer: {e}")
 
     def start(self) -> None:
         if not self.is_running:
@@ -46,69 +49,9 @@ class RepeatedTimer:
         self.is_running = False
 
 
-
-
-
-# Initialize the ServerManager
-
 # Set up the periodic update timer
 rt = RepeatedTimer(10, server_manager.update)
 
-#@app.route('/update')
-# def serv_stats():
-#     #Return the current server status.
-#     server_list = []
-#     for game in game_list:
-#         server_list.append({
-#             "name": game.name,
-#             "icon": game.icon,
-#             "status": game.running,
-#             "port": game.ports[0]
-#         })
-#     return json.dumps({
-#         "active_server": server_manager.active_server,
-#         "player_count": len(server_manager.connected_players),
-#         "players": server_manager.connected_players,
-#         "games": server_list
-#     })
-
-# @app.route('/image/<gameid>')
-# def return_image(gameid: str):
-#     #Return the image for a specific game.
-#     for game in game_list:
-#         if game.name.lower() == gameid.lower():
-#             image_path = f"static/{game.icon}.png"
-#             return send_file(image_path, mimetype='image/png')
-#     return "No image found"
-
-# @app.route('/<gameid>/<cmd>')
-# def exec_cmd_on_game(gameid: str, cmd: str):
-#     #Execute a command on a specific game server.#
-#     global game_list
-#     for game in game_list:
-#         if game.name.lower() == gameid.lower():
-#             result = game.exec_cmd(cmd)
-#             if cmd == "start":
-#                 if server_manager.active_server and server_manager.active_server != game.name:
-#                     logging.warning(f"Attempted to start {game.name} while {server_manager.active_server} is already running.")
-#                     return json.dumps({"error": "Another server is already running"})
-#                 if "started" in result:
-#                     server_manager.active_server = game.name
-#                     server_manager.empty_time = datetime.datetime.now()
-#                     logging.info(f"{game.name} server started.")
-#             elif cmd == "stop":
-#                 if "stopped" in result:
-#                     server_manager.active_server = ""
-#                     server_manager.connected_players = []
-#                     logging.info(f"{game.name} server stopped.")
-#             return json.dumps({
-#                 "active_server": server_manager.active_server,
-#                 "player_count": len(server_manager.connected_players),
-#                 "players": server_manager.connected_players,
-#                 "result": result
-#             })
-#     logging.error(f"Game {gameid} not found.")
-#     return json.dumps({"error": "Game not found"})
 
 # Register blueprints
 app.register_blueprint(game_bp)
@@ -116,12 +59,20 @@ app.register_blueprint(game_bp)
 
 @app.route('/health')
 def health_check():
-    #Return the health status of the server.#
-    return json.dumps({"status": "ok"}), 200
+    try:
+        return json.dumps({"status": "ok"}), 200
+    except Exception as e:
+        logging.error(f"Error in health check endpoint: {e}")
+        return json.dumps({"status": "error", "message": str(e)}), 500
 
 if __name__ == "__main__":
-    chain = os.getenv("SSL_CHAIN")
-    privkey = os.getenv("SSL_PRIVKEY")
-    app.run(ssl_context=(chain, privkey), host="0.0.0.0", port=8080)
+    try:
+        chain = os.getenv("SSL_CHAIN")
+        privkey = os.getenv("SSL_PRIVKEY")
+        if not chain or not privkey:
+            raise ValueError("SSL_CHAIN or SSL_PRIVKEY environment variables are not set.")
+        app.run(ssl_context=(chain, privkey), host="0.0.0.0", port=8080)
+    except Exception as e:
+        logging.error(f"Error starting the server: {e}")
 
 rt.stop()  # Stop the timer when the script ends. Server behaves weirdly if you don't do this.
