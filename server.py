@@ -173,7 +173,7 @@ rt = RepeatedTimer(10, server_manager.update)
 #     return json.dumps({"error": "Game not found"})
 
 # Register blueprints
-game_routes.register_blueprints(app)
+app.register_blueprint(game_routes, url_prefix="/games")
 
 
 @app.route('/health')
