@@ -3,7 +3,7 @@ import datetime
 import json
 import logging
 from games import game_list
-from server import server_manager
+from manager import ServerManager
 
 # Create a blueprint for game-related routes
 game_routes = Blueprint("game_routes", __name__)
