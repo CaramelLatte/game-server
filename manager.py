@@ -72,4 +72,4 @@ class ServerManager:
         self.idle_timeout_check()
         self.perform_health_check()
 
-server_manager = ServerManager()
+server_manager = ServerManager(game_list)
