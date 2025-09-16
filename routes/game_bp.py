@@ -1,11 +1,12 @@
 from flask import Blueprint, send_file, jsonify
 import datetime
 import logging
+import json
 from games import game_list
 from manager import server_manager
 
 # Create a blueprint for game-related routes
-game_bp= Blueprint("game_bp", __name__)
+game_bp=Blueprint("game_bp", __name__)
 
 @game_bp.route('/update')
 def serv_stats():
@@ -18,7 +19,7 @@ def serv_stats():
             "status": game.running,
             "port": game.ports[0]
         })
-    return jsonify({
+    return json.dumps({
         "active_server": server_manager.active_server,
         "player_count": len(server_manager.connected_players),
         "players": server_manager.connected_players,
