@@ -1,0 +1,64 @@
+from flask import Blueprint, send_file, jsonify
+import datetime
+import json
+import logging
+from games import game_list
+from server import server_manager
+
+# Create a blueprint for game-related routes
+game_routes = Blueprint("game_routes", __name__)
+
+@game_routes.route('/update')
+def serv_stats():
+    """Return the current server status."""
+    server_list = []
+    for game in game_list:
+        server_list.append({
+            "name": game.name,
+            "icon": game.icon,
+            "status": game.running,
+            "port": game.ports[0]
+        })
+    return jsonify({
+        "active_server": server_manager.active_server,
+        "player_count": len(server_manager.connected_players),
+        "players": server_manager.connected_players,
+        "games": server_list
+    })
+
+@game_routes.route('/image/<gameid>')
+def return_image(gameid: str):
+    """Return the image for a specific game."""
+    for game in game_list:
+        if game.name.lower() == gameid.lower():
+            image_path = f"static/{game.icon}.png"
+            return send_file(image_path, mimetype='image/png')
+    return "No image found", 404
+
+@game_routes.route('/<gameid>/<cmd>')
+def exec_cmd_on_game(gameid: str, cmd: str):
+    """Execute a command on a specific game server."""
+    for game in game_list:
+        if game.name.lower() == gameid.lower():
+            result = game.exec_cmd(cmd)
+            if cmd == "start":
+                if server_manager.active_server and server_manager.active_server != game.name:
+                    logging.warning(f"Attempted to start {game.name} while {server_manager.active_server} is already running.")
+                    return jsonify({"error": "Another server is already running"}), 400
+                if "started" in result:
+                    server_manager.active_server = game.name
+                    server_manager.empty_time = datetime.datetime.now()
+                    logging.info(f"{game.name} server started.")
+            elif cmd == "stop":
+                if "stopped" in result:
+                    server_manager.active_server = ""
+                    server_manager.connected_players = []
+                    logging.info(f"{game.name} server stopped.")
+            return jsonify({
+                "active_server": server_manager.active_server,
+                "player_count": len(server_manager.connected_players),
+                "players": server_manager.connected_players,
+                "result": result
+            })
+    logging.error(f"Game {gameid} not found.")
+    return jsonify({"error": "Game not found"}), 404

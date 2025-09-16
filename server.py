@@ -1,171 +1,128 @@
-from flask import Flask, send_file
+from flask import Flask
 from flask_cors import CORS
-from games import *
-import datetime
-import json
-import dotenv
 from threading import Timer
+import dotenv
+import logging
+from routes import register_blueprints
+import json
+import os
+import datetime
 import requests
 import subprocess
-import os
-import logging
+from typing import List, Optional
 
+
+# Initialize Flask app
 app = Flask(__name__)
 CORS(app)
 dotenv.load_dotenv()
-active_server = ""
-connected_players = []
-max_empty_time = 60  # value in minutes to allow server to be empty before stopping it. 0 means server will never stop due to inactivity.
-empty_time = datetime.datetime.now()
 
-# Configure logging for the module
+# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Timer class to run the update function periodically
-class RepeatedTimer(object):
-    def __init__(self, interval, function):
-        self._timer = None
-        self.interval = interval
-        self.function = function
-        self.is_running = False
+class RepeatedTimer:
+    #Timer class to run a function periodically.
+    def __init__(self, interval: int, function: callable) -> None:
+        self._timer: Optional[Timer] = None
+        self.interval: int = interval
+        self.function: callable = function
+        self.is_running: bool = False
         self.start()
-    def _run(self):
+
+    def _run(self) -> None:
         self.is_running = False
         self.start()
         self.function()
 
-    def start(self):
+    def start(self) -> None:
         if not self.is_running:
             self._timer = Timer(self.interval, self._run)
             self._timer.start()
             self.is_running = True
 
-    def stop(self):
-        self._timer.cancel()
+    def stop(self) -> None:
+        if self._timer:
+            self._timer.cancel()
         self.is_running = False
 
-def get_server_status():
-    # Function to get the status of all servers
-    global game_list
-    global active_server
-    for game in game_list:
-        game.check_if_running()
-        if game.running:
-            active_server = game.name
-            break
-def get_connected_players():
-    # Function to get the list of connected players from the active server
-    global active_server
-    global connected_players
-    connected_players = []  # Reset the list of connected players
-    for game in game_list:
-        if game.name == active_server:
-            players = game.get_connected_players()
-            if players and len(players) > 0:
-                connected_players.extend(players)
-            else:
-                connected_players = []
 
-def idle_timeout_check():
-    # Function to check if the server is idle for a certain amount of time
-    global active_server
-    global connected_players
-    global empty_time
-    global max_empty_time
+class ServerManager:
+    #Class to manage the state and operations of game servers.
+    def __init__(self) -> None:
+        self.active_server: str = ""
+        self.connected_players: List[str] = []
+        self.max_empty_time: int = 60  # Minutes to allow server to be empty before stopping
+        self.empty_time: datetime.datetime = datetime.datetime.now()
 
-    if max_empty_time > 0 and len(connected_players) == 0 and active_server != "":
-        empty_check = datetime.datetime.now()
-        difference = (empty_check.minute + (empty_check.hour * 60)) - (empty_time.minute + (empty_time.hour * 60))
-        if difference >= max_empty_time:
-            for game in game_list:
-                if game.running:
-                    game.exec_cmd("stop")
-                    logging.info(f"Server {game.name} stopped due to inactivity.")
-                    active_server = ""
-            empty_time = datetime.datetime.now()
+    def get_server_status(self) -> None:
+        #Check the status of all servers and update the active server.
+        global game_list
+        self.active_server = ""
+        for game in game_list:
+            game.check_if_running()
+            if game.running:
+                self.active_server = game.name
+                break
 
-def perform_health_check():
-    try:
-        HEALTH_CHECK_URL = os.getenv("HEALTH_CHECK_URL")
-        if not HEALTH_CHECK_URL:
-            logging.warning("HEALTH_CHECK_URL not set in environment variables.")
-            return
-        request = requests.get(HEALTH_CHECK_URL, timeout=5)
-        if request.status_code != 200:
-            logging.error("Health check failed!")
+    def get_connected_players(self) -> None:
+        #Get the list of connected players from the active server.
+        global game_list
+        self.connected_players = []
+        for game in game_list:
+            if game.name == self.active_server:
+                players = game.get_connected_players()
+                if players:
+                    self.connected_players.extend(players)
+
+    def idle_timeout_check(self) -> None:
+        #Stop the server if it has been idle for too long.
+        if self.max_empty_time > 0 and not self.connected_players and self.active_server:
+            empty_check = datetime.datetime.now()
+            difference = (empty_check.minute + (empty_check.hour * 60)) - (self.empty_time.minute + (self.empty_time.hour * 60))
+            if difference >= self.max_empty_time:
+                global game_list
+                for game in game_list:
+                    if game.running:
+                        game.exec_cmd("stop")
+                        logging.info(f"Server {game.name} stopped due to inactivity.")
+                        self.active_server = ""
+                self.empty_time = datetime.datetime.now()
+
+    def perform_health_check(self) -> None:
+        #Perform a health check on the server.
+        try:
+            health_check_url = os.getenv("HEALTH_CHECK_URL")
+            if not health_check_url:
+                logging.warning("HEALTH_CHECK_URL not set in environment variables.")
+                return
+            response = requests.get(health_check_url, timeout=5)
+            if response.status_code != 200:
+                logging.error("Health check failed!")
+                subprocess.run(["systemctl", "restart", "game-server.service"], check=True)
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Health check request failed: {e}")
             subprocess.run(["systemctl", "restart", "game-server.service"], check=True)
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Health check request failed: {e}")
-        subprocess.run(["systemctl", "restart", "game-server.service"], check=True)
 
-def update():
-    get_server_status()
-    get_connected_players()
-    idle_timeout_check()
-    perform_health_check()
-
-rt = RepeatedTimer(10, update) # Periodic update every 10 seconds
-
-@app.route('/update')
-def serv_stats():
-    server_list = []
-    for game in game_list:
-        server_list.append({
-            "name": game.name,
-            "icon": game.icon,
-            "status": game.running,
-            "port": game.ports[0]
-        })
-    return json.dumps({
-        "active_server": active_server,
-        "player_count": len(connected_players),
-        "players": connected_players,
-        "games": server_list
-    })
-
-@app.route('/image/<gameid>')
-def return_image(gameid):
-    for game in game_list:
-        if game.name.lower() == gameid.lower():
-            image_path = f"static/{game.icon}.png"
-            return send_file(image_path, mimetype='image/png')
-    return "No image found"
+    def update(self) -> None:
+        #Perform periodic updates.
+        self.get_server_status()
+        self.get_connected_players()
+        self.idle_timeout_check()
+        self.perform_health_check()
 
 
-#Server commands presently only support start and stop. More commands will be added specific to each game at a later date.
-@app.route('/<gameid>/<cmd>')
-def exec_cmd_on_game(gameid, cmd):
-    global active_server
-    global connected_players
-    global empty_time
-    global max_empty_time
-    for game in game_list:
-        if game.name.lower() == gameid.lower():
-            result = game.exec_cmd(cmd)
-            if cmd == "start":
-                if active_server and active_server != game.name:
-                    logging.warning(f"Attempted to start {game.name} while {active_server} is already running.")
-                    return json.dumps({"error": "Another server is already running"})
-                if "started" in result:
-                    active_server = game.name
-                    empty_time = datetime.datetime.now()
-                    logging.info(f"{game.name} server started.")
-            elif cmd == "stop":
-                if "stopped" in result:
-                    active_server = ""
-                    connected_players = []
-                    logging.info(f"{game.name} server stopped.")
-            return json.dumps({
-                "active_server": active_server,
-                "player_count": len(connected_players),
-                "players": connected_players,
-                "result": result
-            })
-    logging.error(f"Game {gameid} not found.")
-    return json.dumps({"error": "Game not found"})
+# Initialize the ServerManager
+server_manager = ServerManager()
+
+# Set up the periodic update timer
+rt = RepeatedTimer(10, server_manager.update)
+
+# Register blueprints
+register_blueprints(app)
 
 @app.route('/health')
 def health_check():
+    """Return the health status of the server."""
     return json.dumps({"status": "ok"}), 200
 
 if __name__ == "__main__":

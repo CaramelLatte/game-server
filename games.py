@@ -2,30 +2,40 @@ import docker
 import os
 from utils import get_steam_username
 import logging
+from typing import List, Dict, Optional
 
 # Configure logging for the module
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class GameServer:
-    def __init__(self, name, icon, ports, image, container_name, env_vars=None, volume=None, log_strings=None) -> None:
-        self.name = name  # String, name of the game server
-        self.icon = icon  # String, filename sans extension of the game server icon
-        self.ports = ports  # List, ports used by the game server
-        self.image = image  # String, Docker image name
-        self.container_name = container_name  # String, Docker container name
-        self.env_vars = env_vars or {}  # Dictionary, environment variables for the container
-        self.volume = volume  # String, directory path to mount. The container will have its own working directory, we set an additional path to mount here to allow for files to persist between server restarts.
-        self.log_strings = log_strings # Dictionary, log strings for player connection/disconnection, as well as a line to indicate a new instance of server has been launched
-        # Important note - if the server log line ends with the player name for connect, disconnect, or both, there is no tail to check for. In this case, the tail should be set to an empty string.
-        self.running = False 
-        self.client = docker.from_env() # Initialize Docker client
+    def __init__(
+        self,
+        name: str,
+        icon: str,
+        ports: List[int],
+        image: str,
+        container_name: str,
+        env_vars: Optional[Dict[str, str]] = None,
+        volume: Optional[str] = None,
+        log_strings: Optional[Dict[str, str]] = None
+    ) -> None:
+        self.name: str = name  #name of the game server
+        self.icon: str = icon  #filename sans extension of the game server icon
+        self.ports: List[int] = ports  #ports used by the game server
+        self.image: str = image  #Docker image name
+        self.container_name: str = container_name  #Docker container name
+        self.env_vars: Dict[str, str] = env_vars or {}  #environment variables for the container
+        self.volume: Optional[str] = volume  #directory path to mount
+        self.log_strings: Optional[Dict[str, str]] = log_strings  #log strings for player connection/disconnection
+        self.running: bool = False  #whether the server is running
+        self.client: docker.DockerClient = docker.from_env()  # Initialize Docker client
 
-    def get_connected_players(self):
+    def get_connected_players(self) -> List[str]:
         # Fetches the list of connected players from the game server logs.
         # This method uses the log strings defined in the log_strings dictionary to parse the logs and extract player names.
         if not self.log_strings:
             return []
-        connected_players = []
+        connected_players: List[str] = []
         container = self.client.containers.get(self.container_name)
         logs = container.logs(stream=False)
         if logs:
@@ -78,15 +88,14 @@ class GameServer:
                     logging.warning(f"Could not resolve Steam ID {player} to a username. Keeping the numeric ID as the player name.")
         return connected_players
 
-    def check_if_running(self):
+    def check_if_running(self) -> None:
         try:
             container = self.client.containers.get(self.container_name)
             self.running = container.status == "running"
         except docker.errors.NotFound:
             self.running = False
-            
 
-    def exec_cmd(self, command):
+    def exec_cmd(self, command: str) -> str:
         self.check_if_running()
         if command == "start":
             if not self.running:
