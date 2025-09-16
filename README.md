@@ -24,18 +24,21 @@ Adding new games is simple. In games.py, create a new instance of the GameServer
 
 CHANGES PLANNED:
 
-1: **Implement API key checking to only allow validated users to issue commands**
+1: **Implement API key checking to only allow validated users to issue commands:**
   While this is intended and makes sense for a production version of this software, it doesn't make sense to incorporate this functionality while this project simply operates on my own personal hardware as a demonstration for my portfolio.
 
-2: **Consider using personally-build docker containers to allow consistent performance across different game servers**
+2: **Consider using personally-build docker containers to allow consistent performance across different game servers:**
   Different docker containers built by different developers will have different capabilities and features. This makes coding a single clean set of logic to handle all possible games a user might want to add exceptionally difficult. As an example, some docker containers will correctly see changes made to the mirrored easily-accessible directories, and some will only reference an internally-managed hashed directory in /var/lib/docker/volumes/ despite every server object being created with a valid defined mirror volume. This makes it unintuitive and complicated to figure out how to modify and customize a game server at the user's whim. There may be additional ways to resolve this that I can explore, but this is of lesser priority than just further refining my development skills.
 
-3: **Refactoring**
+3: **Refactoring:**
   There is likely a lot left to do here as this project has essentially been iterated upon from near the beginning of my development learning, so I revisit and improve upon it over time.
 
-4: **Expand these servers with mod support**
+4: **Expand these servers with mod support:**
   Along with building my own containers, having a method to allow for third party mods to be incorporated into an image drastically improves replayability and appeal factor for certain users. This is an extensive undertaking that I believe will require significant time investment, as mods are handled a variety of ways for different games, and they would all require creating custom images. Still, it would be really dang cool to have this feature.
 
-5: **Features to back-up and create new instances of an image, or of the data within**
+5: **Features to back-up and create new instances of an image, or of the data within:**
   The types of games suited to this project largely are cooperative or competitive with instanced worlds that users may play in together. It would be particularly nice if, for instance, one group of friends may create an instance of a world and keep their own progress and state separate from another group of friends, allowing a wider array of users to utilize the same server manager.
+
+6: **Honestly so much more**:
+  The biggest thing I've learned from this project is what it actually means to over-engineer something. I'm guilty of it and I fully intend to continue.
   
