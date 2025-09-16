@@ -21,7 +21,7 @@ dotenv.load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class RepeatedTimer:
-    #Timer class to run a function periodically.
+    #Timer class to run a function periodically. Blatantly ripped this off of stack overflow.
     def __init__(self, interval: int, function: callable) -> None:
         self._timer: Optional[Timer] = None
         self.interval: int = interval
