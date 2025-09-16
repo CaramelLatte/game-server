@@ -1,14 +1,13 @@
 from flask import Blueprint, send_file, jsonify
 import datetime
-import json
 import logging
 from games import game_list
 from manager import server_manager
 
 # Create a blueprint for game-related routes
-game_routes = Blueprint("game_routes", __name__)
+game_bp= Blueprint("game_bp", __name__)
 
-@game_routes.route('/update')
+@game_bp.route('/update')
 def serv_stats():
     """Return the current server status."""
     server_list = []
@@ -26,7 +25,7 @@ def serv_stats():
         "games": server_list
     })
 
-@game_routes.route('/image/<gameid>')
+@game_bp.route('/image/<gameid>')
 def return_image(gameid: str):
     """Return the image for a specific game."""
     for game in game_list:
@@ -35,7 +34,7 @@ def return_image(gameid: str):
             return send_file(image_path, mimetype='image/png')
     return "No image found", 404
 
-@game_routes.route('/<gameid>/<cmd>')
+@game_bp.route('/<gameid>/<cmd>')
 def exec_cmd_on_game(gameid: str, cmd: str):
     """Execute a command on a specific game server."""
     for game in game_list:

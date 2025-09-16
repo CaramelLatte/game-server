@@ -10,7 +10,7 @@ import subprocess
 import os
 import logging
 from typing import List, Optional
-from routes import game_routes
+from routes.game_bp import game_bp
 from manager import server_manager
 
 app = Flask(__name__)
@@ -111,7 +111,7 @@ rt = RepeatedTimer(10, server_manager.update)
 #     return json.dumps({"error": "Game not found"})
 
 # Register blueprints
-app.register_blueprint(game_routes, url_prefix="/games")
+app.register_blueprint(game_bp, url_prefix="/games")
 
 
 @app.route('/health')
