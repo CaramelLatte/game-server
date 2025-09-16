@@ -5,16 +5,16 @@ import logging
 import os
 import requests
 import subprocess
-from games import game_list, GameServer
+from games import game_list
 
 class ServerManager:
     #Class to manage the state and operations of game servers.
-    def __init__(self, game_list: List[GameServer]) -> None:
+    def __init__(self, game_list) -> None:
         self.active_server: str = ""
         self.connected_players: List[str] = []
         self.max_empty_time: int = 60  # Minutes to allow server to be empty before stopping
         self.empty_time: datetime.datetime = datetime.datetime.now()
-        self.game_list: List[GameServer] = game_list
+        self.game_list = game_list
 
     def get_server_status(self) -> None:
         #Check the status of all servers and update the active server.
