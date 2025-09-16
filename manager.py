@@ -5,6 +5,7 @@ import logging
 import os
 import requests
 import subprocess
+from games import game_list
 
 class ServerManager:
     #Class to manage the state and operations of game servers.
@@ -16,7 +17,7 @@ class ServerManager:
 
     def get_server_status(self) -> None:
         #Check the status of all servers and update the active server.
-        global game_list
+        
         self.active_server = ""
         for game in game_list:
             game.check_if_running()
@@ -26,7 +27,7 @@ class ServerManager:
 
     def get_connected_players(self) -> None:
         #Get the list of connected players from the active server.
-        global game_list
+        
         self.connected_players = []
         for game in game_list:
             if game.name == self.active_server:
