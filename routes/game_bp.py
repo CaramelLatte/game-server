@@ -9,7 +9,7 @@ game_bp=Blueprint("game_bp", __name__)
 
 @game_bp.route('/update')
 def serv_stats():
-    """Return the current server status."""
+    #Return the current server status.
     try:
         server_list = []
         for game in server_manager.game_list:
@@ -31,7 +31,7 @@ def serv_stats():
 
 @game_bp.route('/image/<gameid>')
 def return_image(gameid: str):
-    """Return the image for a specific game."""
+    #Return the image for a specific game.
     try:
         for game in server_manager.game_list:
             if game.name.lower() == gameid.lower():
@@ -44,7 +44,7 @@ def return_image(gameid: str):
 
 @game_bp.route('/<gameid>/<cmd>')
 def exec_cmd_on_game(gameid: str, cmd: str):
-    """Execute a command on a specific game server."""
+    #Execute a command on a specific game server. Right now only start and stop are supported. Additional commands may be added in server.py later.
     try:
         for game in server_manager.game_list:
             if game.name.lower() == gameid.lower():

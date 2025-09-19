@@ -1,23 +1,19 @@
 from flask import Flask
 from flask_cors import CORS
 from games import *
-import datetime
 import json
 import dotenv
 from threading import Timer
-import requests
-import subprocess
 import os
 import logging
 from typing import List, Optional
 from routes.game_bp import game_bp
 from manager import server_manager
 
+#basic setup
 app = Flask(__name__)
 CORS(app)
 dotenv.load_dotenv()
-
-# Configure logging for the module
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class RepeatedTimer:
@@ -75,4 +71,5 @@ if __name__ == "__main__":
     except Exception as e:
         logging.error(f"Error starting the server: {e}")
 
-rt.stop()  # Stop the timer when the script ends. Server behaves weirdly if you don't do this.
+    finally:
+        rt.stop()  # Stop the timer when the script ends. Server behaves weirdly if you don't do this.
