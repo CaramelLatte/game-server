@@ -44,8 +44,8 @@ class ServerManager:
                 empty_check = datetime.datetime.now()
                 difference = (empty_check.minute + (empty_check.hour * 60)) - (self.empty_time.minute + (self.empty_time.hour * 60))
                 if difference >= self.max_empty_time:
-                    global game_list
-                    for game in game_list:
+                   
+                    for game in self.game_list:
                         if game.running:
                             game.exec_cmd("stop")
                             logging.info(f"Server {game.name} stopped due to inactivity.")

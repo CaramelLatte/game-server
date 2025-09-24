@@ -44,11 +44,22 @@ def return_image(gameid: str):
 
 @game_bp.route('/<gameid>/<cmd>')
 def exec_cmd_on_game(gameid: str, cmd: str):
-    #Execute a command on a specific game server. Right now only start and stop are supported. Additional commands may be added in server.py later.
+    # Sanitize and validate inputs right now only start and stop are valid commands
+    allowed_cmds = {"start", "stop"}
+    valid_gameids = {game.name.lower() for game in server_manager.game_list}
+
+    if gameid.lower() not in valid_gameids:
+        logging.warning(f"Invalid gameid received: {gameid}")
+        return jsonify({"error": "Invalid game ID"}), 400
+
+    if cmd.lower() not in allowed_cmds:
+        logging.warning(f"Invalid command received: {cmd}")
+        return jsonify({"error": "Invalid command"}), 400
+
     try:
         for game in server_manager.game_list:
             if game.name.lower() == gameid.lower():
-                result = game.exec_cmd(cmd)
+                result = game.exec_cmd(cmd.lower())
                 if cmd == "start":
                     if server_manager.active_server and server_manager.active_server != game.name:
                         logging.warning(f"Attempted to start {game.name} while {server_manager.active_server} is already running.")
