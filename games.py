@@ -127,7 +127,7 @@ class GameServer:
                             name=self.container_name,
                             ports={**{f"{port}/tcp": port for port in self.ports}, **{f"{port}/udp": port for port in self.ports}},
                             environment=self.env_vars,
-                            volumes={self.volume: {'bind': '/data', 'mode': 'rw'}},
+                            volumes={self.volume: {'bind': self.volume,  'mode': 'rw'}},
                             detach=True,
                         )
                         logging.info(f"{self.name} server container created and started.")
@@ -186,7 +186,7 @@ val_serv = GameServer(
     "/home/gameserver/valheim/",
     {
         "connect_head": "Got handshake from client ",
-        "connect_tail": "",
+        "connect_tai'l": "",
         "disconnect_head": "Closing socket ",
         "disconnect_tail": "",
         "new_instance": "Starting Valheim server",
