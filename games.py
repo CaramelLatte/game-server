@@ -118,7 +118,7 @@ class GameServer:
                         # If the container doesn't exist, check if the image exists and pull it if not
                         images = self.client.images.list(name=self.image)
                         if not images:
-                            self.build_image(self.image)
+                            self.build_image()
                             logging.info(f"Pulled Docker image for {self.name} server.")
 
                         # Create and start a new container with associated arguments
@@ -195,7 +195,7 @@ val_serv = GameServer(
     "valheim",
     [2456, 2457],
     "valheim-modded:latest",
-    "valheim_server",
+    "valheim_modded",
     {"SERVER_NAME": "ValheimServer", "WORLD_NAME": "MyWorld", "SERVER_PASS": "secret"},
     "/home/gameserver/valheim/",
     {
