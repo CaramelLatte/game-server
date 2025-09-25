@@ -118,7 +118,7 @@ class GameServer:
                         # If the container doesn't exist, check if the image exists and pull it if not
                         images = self.client.images.list(name=self.image)
                         if not images:
-                            self.client.images.pull(self.image)
+                            self.build_image(self.image)
                             logging.info(f"Pulled Docker image for {self.name} server.")
 
                         # Create and start a new container with associated arguments
@@ -154,7 +154,21 @@ class GameServer:
             logging.error(f"Unexpected error while executing '{command}' on {self.name}: {e}")
             return f"Unexpected error: {e}"
         
-
+    def build_image(self) -> str:
+        try:
+            self.client.images.build(
+                path=".",  
+                dockerfile=f"Dockerfiles/{self.name}.Dockerfile",  # Relative path to Dockerfile
+                tag=self.image
+            )
+            logging.info(f"Docker image for {self.name} built successfully.")
+            return f"Image for {self.name} built successfully."
+        except docker.errors.BuildError as e:
+            logging.error(f"Error building Docker image for {self.name}: {e}")
+            return f"Error building image for {self.name}."
+        except Exception as e:
+            logging.error(f"Unexpected error building image for {self.name}: {e}")
+            return f"Unexpected error: {e}" 
 
 # Define the game list and add individual game server objects to it
 game_list = []
@@ -180,13 +194,13 @@ val_serv = GameServer(
     "Valheim",
     "valheim",
     [2456, 2457],
-    "lloesche/valheim-server",
+    "valheim-modded:latest",
     "valheim_server",
     {"SERVER_NAME": "ValheimServer", "WORLD_NAME": "MyWorld", "SERVER_PASS": "secret"},
     "/home/gameserver/valheim/",
     {
         "connect_head": "Got handshake from client ",
-        "connect_tai'l": "",
+        "connect_tail": "",
         "disconnect_head": "Closing socket ",
         "disconnect_tail": "",
         "new_instance": "Starting Valheim server",
