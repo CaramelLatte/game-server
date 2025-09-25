@@ -118,10 +118,15 @@ class GameServer:
                         # If the container doesn't exist, check if the image exists and pull it if not
                         images = self.client.images.list(name=self.image)
                         if not images:
-                            self.build_image()
-                            logging.info(f"Pulled Docker image for {self.name} server.")
+                            # Build the image if it doesn't exist
+                            build_result = self.build_image()
+                            logging.info(build_result)
+                            images = self.client.images.list(name=self.image)
+                            if not images:
+                                logging.error(f"Image {self.image} still not found after build.")
+                                return f"Error: Image {self.image} could not be built."
 
-                        # Create and start a new container with associated arguments
+                        # Now safe to run
                         self.client.containers.run(
                             self.image,
                             name=self.container_name,
@@ -157,8 +162,8 @@ class GameServer:
     def build_image(self) -> str:
         try:
             self.client.images.build(
-                path=".",  
-                dockerfile=f"Dockerfiles/{self.name}.Dockerfile",  # Relative path to Dockerfile
+                path=".",
+                dockerfile=f"Dockerfiles/{self.name}.Dockerfile",
                 tag=self.image
             )
             logging.info(f"Docker image for {self.name} built successfully.")
