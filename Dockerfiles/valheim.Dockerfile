@@ -39,7 +39,7 @@ RUN wget https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x6
     && rm BepInEx_x64_5.4.21.0.zip
 
 RUN echo '#!/bin/bash' > /home/gameserver/valheim/start-server.sh && \
-    echo '/opt/steamcmd/steamcmd.sh +login anonymous +force_install_dir /home/gameserver/valheim +app_update 896660 validate +quit' >> /home/gameserver/valheim/start-server.sh && \
+    echo '/opt/steamcmd/steamcmd.sh +force_install_dir /home/gameserver/valheim +login anonymous +app_update 896660 validate +quit' >> /home/gameserver/valheim/start-server.sh && \
     echo 'cd /home/gameserver/valheim' >> /home/gameserver/valheim/start-server.sh && \
     echo './valheim_server.x86_64 -name "Nerds" -port 2456 -world "Nerdaria" -password "onlynerdsplayvalheim" -public 1' >> /home/gameserver/valheim/start-server.sh
 
