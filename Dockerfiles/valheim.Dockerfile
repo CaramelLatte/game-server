@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     curl \
     tar \
+    ca-certificates \
+    lib32gcc1 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -d /home/gameserver gameserver
