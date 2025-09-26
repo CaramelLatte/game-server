@@ -33,7 +33,7 @@ EXPOSE 2456/udp 2457/udp 2458/udp
 
 WORKDIR /home/gameserver/valheim
 
-ENTRYPOINT ["/home/gameserver/valheim/start_server.sh"]
+ENTRYPOINT ["/home/gameserver/valheim/start-server.sh"]
 
 RUN chmod +x /home/gameserver/valheim/start-server.sh
 
