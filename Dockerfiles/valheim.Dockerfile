@@ -35,7 +35,7 @@ WORKDIR /home/gameserver/valheim
 
 ENTRYPOINT ["/home/gameserver/valheim/start_server.sh"]
 
-RUN chmod +x /home/gameserver/valheim/start_server.sh
+RUN chmod +x /home/gameserver/valheim/start-server.sh
 
 RUN wget https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x64_5.4.21.0.zip \
     && unzip BepInEx_x64_5.4.21.0.zip -d /home/gameserver/valheim \
