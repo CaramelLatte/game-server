@@ -17,7 +17,8 @@ WORKDIR /home/gameserver/valheim
 
 USER root
 RUN mkdir -p /opt/steamcmd && chown gameserver:gameserver /opt/steamcmd
-USER gameserver
+
+
 WORKDIR /opt/steamcmd
 
 RUN wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz \
@@ -30,7 +31,7 @@ RUN ./steamcmd.sh +login anonymous \
     +quit
     
 EXPOSE 2456/udp 2457/udp 2458/udp
-
+USER gameserver
 WORKDIR /home/gameserver/valheim
 
 ENTRYPOINT ["/home/gameserver/valheim/start-server.sh"]
