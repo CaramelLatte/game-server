@@ -34,13 +34,16 @@ EXPOSE 2456/udp 2457/udp 2458/udp
 
 WORKDIR /home/gameserver/valheim
 
-ENTRYPOINT ["./start-server.sh"]
-
-RUN chmod +x /home/gameserver/valheim/start-server.sh
-
 RUN wget https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x64_5.4.21.0.zip \
     && unzip BepInEx_x64_5.4.21.0.zip -d /home/gameserver/valheim \
     && rm BepInEx_x64_5.4.21.0.zip
+
+RUN echo '#!/bin/bash' > /home/gameserver/valheim/start-server.sh && \
+    echo 'cd /home/gameserver/valheim' >> /home/gameserver/valheim/start-server.sh && \
+    echo './valheim_server.x86_64 -name "Nerds" -port 2456 -world "Nerdaria" -password "onlynerdsplayvalheim" -public 1' >> /home/gameserver/valheim/start-server.sh
+
+RUN chmod +x /home/gameserver/valheim/start-server.sh
+ENTRYPOINT ["/home/gameserver/valheim/start-server.sh"]
 
 LABEL maintainer="jared.ekenstam@gmail.com"
 LABEL game="valheim"
