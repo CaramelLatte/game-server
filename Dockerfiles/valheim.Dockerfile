@@ -42,7 +42,10 @@ RUN echo '#!/bin/bash' > /home/gameserver/valheim/start-server.sh && \
     echo 'cd /home/gameserver/valheim' >> /home/gameserver/valheim/start-server.sh && \
     echo './valheim_server.x86_64 -name "Nerds" -port 2456 -world "Nerdaria" -password "onlynerdsplayvalheim" -public 1' >> /home/gameserver/valheim/start-server.sh
 
+USER root
+RUN chown gameserver:gameserver /home/gameserver/valheim/start-server.sh
 RUN chmod +x /home/gameserver/valheim/start-server.sh
+USER gameserver
 ENTRYPOINT ["/home/gameserver/valheim/start-server.sh"]
 
 LABEL maintainer="jared.ekenstam@gmail.com"
