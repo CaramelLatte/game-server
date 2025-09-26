@@ -3,11 +3,16 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
-    curl \
+    libpulse0 \
+    libsdl2-2.0-0 \
+    libx11-6 \
+    libxcursor1 \
+    libxrandr2 \
+    libxi6 \
+    libgl1-mesa-glx \
     wget \
     unzip \
-    lib32gcc-s1 \
-    ca-certificates \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -d /home/gameserver gameserver
