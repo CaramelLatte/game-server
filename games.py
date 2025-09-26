@@ -200,7 +200,7 @@ val_serv = GameServer(
     "valheim",
     [2456, 2457],
     "valheim-modded:latest",
-    "valheim-modded"
+    "valheim-modded",
     {"SERVER_NAME": "ValheimServer", "WORLD_NAME": "MyWorld", "SERVER_PASS": "secret"},
     "/home/gameserver/valheim/",
     {
