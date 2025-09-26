@@ -26,7 +26,7 @@ RUN wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz 
     && rm steamcmd_linux.tar.gz
 
 RUN ./steamcmd.sh +login anonymous \
-    +force_install_dir /home/gameserver/valheim/ \
+    +force_install_dir /home/gameserver/valheim \
     +app_update 896660 validate \
     +quit
     
