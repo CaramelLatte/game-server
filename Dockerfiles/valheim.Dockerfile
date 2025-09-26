@@ -47,7 +47,7 @@ RUN wget https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x6
     && rm BepInEx_x64_5.4.21.0.zip
 
 RUN echo '#!/bin/bash' > /home/gameserver/valheim/start-server.sh && \
- echo './valheim_server.x86_64 -name "Nerds" -port 2456 -world "Nerdaria" -password "onlynerdsplayvalheim" -public 1' >> /home/gameserver/valheim/start-server.sh
+ echo './valheim_server.x86_64 -nographics -batchmode -name "Nerds" -port 2456 -world "Nerdaria" -password "onlynerdsplayvalheim" -public 1' >> /home/gameserver/valheim/start-server.sh
 
 USER root
 RUN chown gameserver:gameserver /home/gameserver/valheim/start-server.sh
