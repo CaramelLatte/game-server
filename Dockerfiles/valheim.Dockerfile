@@ -46,6 +46,9 @@ RUN wget https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x6
     && rm BepInEx_x64_5.4.21.0.zip
 
 RUN echo '#!/bin/bash' > /home/gameserver/container-test/valheim/start-server.sh && \
+ export SteamAppId=892970 && \
+ export SteamGameId=892970 && \
+ export LD_LIBRARY_PATH=/home/gameserver/container-test/valheim:$LD_LIBRARY_PATH && \
  echo './valheim_server.x86_64 -nographics -batchmode -name "Nerds" -port 2456 -world "Nerdaria" -password "onlynerdsplayvalheim" -public 1' >> /home/gameserver/container-test/valheim/start-server.sh
 
 RUN echo "892970" > /home/gameserver/container-test/valheim/steam_appid.txt
