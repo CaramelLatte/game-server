@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     lib32gcc1 \
     libstdc++6 \
-    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/lib/apt/lists/*
     
 
 RUN useradd -m -d /home/gameserver gameserver
