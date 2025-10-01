@@ -39,7 +39,7 @@ RUN wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz 
     && tar -xvzf steamcmd_linux.tar.gz \
     && rm steamcmd_linux.tar.gz
 RUN mkdir -p /home/gameserver/container-test/valheim && chown gameserver:gameserver /home/gameserver/container-test/valheim
-RUN cp /home/gameserver/container-test/steamcmd/linux32/steamclient.so /home/gameserver/container-test/valheim/
+# RUN cp /home/gameserver/container-test/steamcmd/linux32/steamclient.so /home/gameserver/container-test/valheim/
 
 # RUN ./steamcmd.sh +force_install_dir /home/gameserver/container-test/valheim \
 #     +login anonymous \
