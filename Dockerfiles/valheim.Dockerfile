@@ -50,13 +50,23 @@ RUN wget https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x6
     && unzip BepInEx_x64_5.4.21.0.zip -d /home/gameserver/container-test/valheim \
     && rm BepInEx_x64_5.4.21.0.zip
 
-RUN echo '#!/bin/bash' > /home/gameserver/container-test/valheim/start-server.sh && \
- export SteamAppId=892970 && \
- export SteamGameId=892970 && \
- export LD_LIBRARY_PATH=/home/gameserver/container-test/valheim:$LD_LIBRARY_PATH && \
- echo './valheim_server.x86_64 -nographics -batchmode -name "Nerds" -port 2456 -world "Nerdaria" -password "onlynerdsplayvalheim" -public 1' >> /home/gameserver/container-test/valheim/start-server.sh
-
 RUN echo "892970" > /home/gameserver/container-test/valheim/steam_appid.txt
+RUN echo '#!/bin/bash' > /home/gameserver/container-test/valheim/start-server.sh && \
+    echo 'export SteamAppId=892970' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo 'export SteamGameId=892970' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo 'export LD_LIBRARY_PATH=/home/gameserver/container-test/valheim:$LD_LIBRARY_PATH' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo '' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo 'if [ ! -f /home/gameserver/container-test/valheim/valheim_server.x86_64 ]; then' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo '  echo "Installing Valheim server via SteamCMD..."' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo '  /home/gameserver/container-test/steamcmd/steamcmd.sh +login anonymous \\' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo '    +force_install_dir /home/gameserver/container-test/valheim \\' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo '    +app_update 896660 validate \\' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo '    +quit' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo 'fi' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo '' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo 'exec ./valheim_server.x86_64 -nographics -batchmode -name "Nerds" -port 2456 -world "Nerdaria" -password "onlynerdsplayvalheim" -public 1' >> /home/gameserver/container-test/valheim/start-server.sh
+
+
 
 USER root
 RUN chown gameserver:gameserver /home/gameserver/container-test/valheim/start-server.sh
