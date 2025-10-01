@@ -31,9 +31,9 @@ RUN useradd -m -d /home/gameserver gameserver
 # WORKDIR /home/gameserver/
 
 USER root
-RUN mkdir -p /home/gameserver/container-test/steamcmd && chown gameserver:gameserver /home/gameserver/container-test/steamcmd
+RUN mkdir -p /home/gameserver/.steam && chown gameserver:gameserver /home/gameserver/container-test/steamcmd
 
-WORKDIR /home/gameserver/container-test/steamcmd
+WORKDIR /home/gameserver/.steam
 
 RUN wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz \
     && tar -xvzf steamcmd_linux.tar.gz \
