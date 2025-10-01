@@ -21,7 +21,9 @@ RUN apt-get update && apt-get install -y \
     tar \
     ca-certificates \
     lib32gcc1 \
-    && rm -rf /var/lib/apt/lists/*
+    libstdc++6 \
+    && rm -rf /var/lib/apt/lists/* \
+    
 
 RUN useradd -m -d /home/gameserver gameserver
 
@@ -52,6 +54,7 @@ RUN wget https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x6
 
 RUN echo "892970" > /home/gameserver/container-test/valheim/steam_appid.txt
 RUN echo '#!/bin/bash' > /home/gameserver/container-test/valheim/start-server.sh && \
+    echo export HOME=/home/gameserver >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo 'export SteamAppId=892970' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo 'export SteamGameId=892970' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo 'export LD_LIBRARY_PATH=/home/gameserver/container-test/valheim:$LD_LIBRARY_PATH' >> /home/gameserver/container-test/valheim/start-server.sh && \
@@ -71,6 +74,7 @@ RUN echo '#!/bin/bash' > /home/gameserver/container-test/valheim/start-server.sh
 USER root
 RUN chown gameserver:gameserver /home/gameserver/container-test/valheim/start-server.sh
 RUN chmod +x /home/gameserver/container-test/valheim/start-server.sh
+RUN cp /home/gameserver/container-test/steamcmd/linux32/steamclient.so /home/gameserver/container-test/valheim/
 ENTRYPOINT ["/home/gameserver/container-test/valheim/start-server.sh"]
 
 LABEL maintainer="jared.ekenstam@gmail.com"
