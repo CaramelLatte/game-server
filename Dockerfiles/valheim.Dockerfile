@@ -2,6 +2,11 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+
+ENV SteamAppId=892970
+ENV SteamGameId=892970
+ENV LD_LIBRARY_PATH=/home/gameserver/container-test/valheim:$LD_LIBRARY_PATH
+
 RUN apt-get update && apt-get install -y \
     libpulse0 \
     libsdl2-2.0-0 \
@@ -58,9 +63,6 @@ RUN chown gameserver:gameserver /home/gameserver/container-test/valheim/start-se
 RUN chmod +x /home/gameserver/container-test/valheim/start-server.sh
 ENTRYPOINT ["/home/gameserver/container-test/valheim/start-server.sh"]
 
-ENV SteamAppId=892970
-ENV SteamGameId=892970
-ENV LD_LIBRARY_PATH=/home/gameserver/container-test/valheim:$LD_LIBRARY_PATH
 LABEL maintainer="jared.ekenstam@gmail.com"
 LABEL game="valheim"
 LABEL version="1.0"
