@@ -20,41 +20,44 @@ RUN apt-get update && apt-get install -y \
 
 RUN useradd -m -d /home/gameserver gameserver
 
-USER gameserver
-WORKDIR /home/gameserver/valheim
+# USER gameserver
+# WORKDIR /home/gameserver/
 
 USER root
-RUN mkdir -p /opt/steamcmd && chown gameserver:gameserver /opt/steamcmd
-USER gameserver
+RUN mkdir -p /home/gameserver/container-test/steamcmd && chown gameserver:gameserver /home/gameserver/container-test/steamcmd
 
-WORKDIR /opt/steamcmd
+WORKDIR /home/gameserver/container-test/steamcmd
 
 RUN wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz \
     && tar -xvzf steamcmd_linux.tar.gz \
     && rm steamcmd_linux.tar.gz
-
-RUN ./steamcmd.sh +force_install_dir /home/gameserver/valheim \
+RUN mkdir -p /home/gameserver/valheim && chown gameserver:gameserver /home/gameserver/valheim
+RUN ./steamcmd.sh +force_install_dir /home/gameserver/container-test/valheim \
     +login anonymous \
     +app_update 896660 validate \
     +quit
     
 EXPOSE 2456/udp 2457/udp 2458/udp
 
-WORKDIR /home/gameserver/valheim
+WORKDIR /home/gameserver/container-test/valheim/
 
 RUN wget https://github.com/BepInEx/BepInEx/releases/download/v5.4.21/BepInEx_x64_5.4.21.0.zip \
-    && unzip BepInEx_x64_5.4.21.0.zip -d /home/gameserver/valheim \
+    && unzip BepInEx_x64_5.4.21.0.zip -d /home/gameserver/container-test/valheim \
     && rm BepInEx_x64_5.4.21.0.zip
 
-RUN echo '#!/bin/bash' > /home/gameserver/valheim/start-server.sh && \
- echo './valheim_server.x86_64 -nographics -batchmode -name "Nerds" -port 2456 -world "Nerdaria" -password "onlynerdsplayvalheim" -public 1' >> /home/gameserver/valheim/start-server.sh
+RUN echo '#!/bin/bash' > /home/gameserver/container-test/valheim/start-server.sh && \
+ echo './valheim_server.x86_64 -nographics -batchmode -name "Nerds" -port 2456 -world "Nerdaria" -password "onlynerdsplayvalheim" -public 1' >> /home/gameserver/container-test/valheim/start-server.sh
+
+RUN echo "892970" > /home/gameserver/container-test/valheim/steam_appid.txt
 
 USER root
-RUN chown gameserver:gameserver /home/gameserver/valheim/start-server.sh
-RUN chmod +x /home/gameserver/valheim/start-server.sh
-USER gameserver
-ENTRYPOINT ["/home/gameserver/valheim/start-server.sh"]
+RUN chown gameserver:gameserver /home/gameserver/container-test/valheim/start-server.sh
+RUN chmod +x /home/gameserver/container-test/valheim/start-server.sh
+ENTRYPOINT ["/home/gameserver/container-test/valheim/start-server.sh"]
 
+ENV SteamAppId=892970
+ENV SteamGameId=892970
+ENV LD_LIBRARY_PATH=/home/gameserver/container-test/valheim:$LD_LIBRARY_PATH
 LABEL maintainer="jared.ekenstam@gmail.com"
 LABEL game="valheim"
 LABEL version="1.0"
