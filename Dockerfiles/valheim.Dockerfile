@@ -37,10 +37,10 @@ RUN wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz 
     && tar -xvzf steamcmd_linux.tar.gz \
     && rm steamcmd_linux.tar.gz
 RUN mkdir -p /home/gameserver/container-test/valheim && chown gameserver:gameserver /home/gameserver/container-test/valheim
-RUN ./steamcmd.sh +force_install_dir /home/gameserver/container-test/valheim \
-    +login anonymous \
-    +app_update 896660 validate \
-    +quit
+# RUN ./steamcmd.sh +force_install_dir /home/gameserver/container-test/valheim \
+#     +login anonymous \
+#     +app_update 896660 validate \
+#     +quit
     
 EXPOSE 2456/udp 2457/udp 2458/udp
 
