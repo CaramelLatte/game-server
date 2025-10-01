@@ -60,6 +60,7 @@ RUN echo '#!/bin/bash' > /home/gameserver/container-test/valheim/start-server.sh
     echo 'export LD_LIBRARY_PATH=/home/gameserver/container-test/valheim:$LD_LIBRARY_PATH' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo '' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo 'if [ ! -f /home/gameserver/container-test/valheim/valheim_server.x86_64 ]; then' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo 'cp /home/gameserver/container-test/steamcmd/linux32/steamclient.so /home/gameserver/container-test/valheim/' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo '  echo "Installing Valheim server via SteamCMD..."' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo '  /home/gameserver/container-test/steamcmd/steamcmd.sh +login anonymous \\' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo '    +force_install_dir /home/gameserver/container-test/valheim \\' >> /home/gameserver/container-test/valheim/start-server.sh && \
@@ -74,7 +75,6 @@ RUN echo '#!/bin/bash' > /home/gameserver/container-test/valheim/start-server.sh
 USER root
 RUN chown gameserver:gameserver /home/gameserver/container-test/valheim/start-server.sh
 RUN chmod +x /home/gameserver/container-test/valheim/start-server.sh
-RUN cp /home/gameserver/container-test/steamcmd/linux32/steamclient.so /home/gameserver/container-test/valheim/
 ENTRYPOINT ["/home/gameserver/container-test/valheim/start-server.sh"]
 
 LABEL maintainer="jared.ekenstam@gmail.com"
