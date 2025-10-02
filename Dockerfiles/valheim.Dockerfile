@@ -1,5 +1,4 @@
-FROM ubuntu:20.04
-
+FROM debian:bullseye-slim AS build-env
 ENV DEBIAN_FRONTEND=noninteractive
 
 
@@ -31,15 +30,15 @@ RUN useradd -m -d /home/gameserver gameserver
 # WORKDIR /home/gameserver/
 
 USER root
-RUN mkdir -p /home/gameserver/.steam && chown gameserver:gameserver /home/gameserver/.steam
+RUN mkdir -p /opt/steamcmd && chown gameserver:gameserver /opt/steamcmd
 
-WORKDIR /home/gameserver/.steam
+WORKDIR /opt/steamcmd
 
 RUN wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz \
     && tar -xvzf steamcmd_linux.tar.gz \
     && rm steamcmd_linux.tar.gz
 RUN mkdir -p /home/gameserver/container-test/valheim && chown gameserver:gameserver /home/gameserver/container-test/valheim
-# RUN cp /home/gameserver/.steam/linux32/steamclient.so /home/gameserver/container-test/valheim/
+# RUN cp /opt/steamcmd/linux32/steamclient.so /home/gameserver/container-test/valheim/
 
 # RUN ./steamcmd.sh +force_install_dir /home/gameserver/container-test/valheim \
 #     +login anonymous \
@@ -62,9 +61,9 @@ RUN echo '#!/bin/bash' > /home/gameserver/container-test/valheim/start-server.sh
     echo 'export LD_LIBRARY_PATH=/home/gameserver/container-test/valheim:$LD_LIBRARY_PATH' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo '' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo 'if [ ! -f /home/gameserver/container-test/valheim/valheim_server.x86_64 ]; then' >> /home/gameserver/container-test/valheim/start-server.sh && \
-    echo 'cp /home/gameserver/.steam/linux32/steamclient.so /home/gameserver/container-test/valheim/' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo 'cp /opt/steamcmd/linux32/steamclient.so /home/gameserver/container-test/valheim/' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo '  echo "Installing Valheim server via SteamCMD..."' >> /home/gameserver/container-test/valheim/start-server.sh && \
-    echo '  /home/gameserver/.steam/steamcmd.sh +login anonymous \\' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo '  /opt/steamcmd/steamcmd.sh +login anonymous \\' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo '    +force_install_dir /home/gameserver/container-test/valheim \\' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo '    +app_update 896660 validate \\' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo '    +quit' >> /home/gameserver/container-test/valheim/start-server.sh && \
