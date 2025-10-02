@@ -11,27 +11,29 @@ USER steam
 WORKDIR /home/steam
 
 # Install SteamCMD
-RUN mkdir -p /home/steam/steamcmd && \
-    cd /home/steam/steamcmd && \
+RUN mkdir steamcmd && \
+    cd steamcmd && \
     curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxvf - && \
     ./steamcmd.sh +quit
 
 # Install Valheim Dedicated Server
-RUN /home/steam/steamcmd/steamcmd.sh \
+RUN ./steamcmd/steamcmd.sh \
     +login anonymous \
     +force_install_dir /home/steam/valheim \
     +app_update 896660 validate \
     +quit
 
-# Install BepInEx (latest stable release)
+# Install BepInEx (Linux / Unix build)
 RUN cd /home/steam && \
-    wget -q https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_UnityMono_x64_5.4.23.2.zip -O bepinex.zip && \
-    unzip bepinex.zip -d /home/steam/valheim && \
+    wget -q https://sourceforge.net/projects/bepinex.mirror/files/v5.4.22/BepInEx_unix_5.4.22.0.zip/download -O bepinex.zip && \
+    unzip bepinex.zip -d valheim && \
     rm bepinex.zip
 
 # Expose default ports
 EXPOSE 2456/udp 2457/udp 2458/udp
 
-# Set entrypoint to Valheim server with BepInEx
 WORKDIR /home/steam/valheim
+
+# Note: Use the BepInEx startup script that comes with the linux build (if present),
+# or fallback to the original server start with modifications.
 ENTRYPOINT ["./start_server_bepinex.sh"]
