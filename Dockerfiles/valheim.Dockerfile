@@ -16,6 +16,8 @@ RUN dpkg --add-architecture i386 && \
     libgcc1 \
     libstdc++6 \
     xvfb \
+    xauth \
+    x11-utils \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
