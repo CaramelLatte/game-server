@@ -67,7 +67,8 @@ RUN cat > $VALHEIM_HOME/run_valheim.sh <<'EOF' && chmod +x $VALHEIM_HOME/run_val
 cd /home/steam/valheim
 
 # Run Valheim server with BepInEx under xvfb (headless X)
-exec xvfb-run -a ./run_bepinex.sh ./valheim_server.x86_64 \
+exec xvfb-run -a --error-file /dev/stderr --server-args="-screen 0 1024x768x24" \
+  ./run_bepinex.sh ./valheim_server.x86_64 \
   -nographics -batchmode \
   -name "${SERVER_NAME:-My Valheim Server}" \
   -port "${PORT:-2456}" \
@@ -75,6 +76,7 @@ exec xvfb-run -a ./run_bepinex.sh ./valheim_server.x86_64 \
   -password "${SERVER_PASS:-secret}" \
   -public "${PUBLIC:-1}" \
   ${ADDITIONAL_ARGS:-} "$@"
+
 EOF
 
 
