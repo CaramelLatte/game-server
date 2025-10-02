@@ -64,12 +64,19 @@ RUN chmod +x $VALHEIM_HOME/run_bepinex.sh
 # ====== Add run_valheim.sh script ======
 RUN cat > $VALHEIM_HOME/run_valheim.sh <<'EOF' && chmod +x $VALHEIM_HOME/run_valheim.sh
 #!/bin/sh
-# Wrapper to launch Valheim + BepInEx in headless X
 cd /home/steam/valheim
 
-# Pass all arguments through
-exec xvfb-run -a ./run_bepinex.sh "$@"
+# Run Valheim server with BepInEx under xvfb (headless X)
+exec xvfb-run -a ./run_bepinex.sh ./valheim_server.x86_64 \
+  -nographics -batchmode \
+  -name "${SERVER_NAME:-My Valheim Server}" \
+  -port "${PORT:-2456}" \
+  -world "${WORLD_NAME:-Dedicated}" \
+  -password "${SERVER_PASS:-secret}" \
+  -public "${PUBLIC:-1}" \
+  ${ADDITIONAL_ARGS:-} "$@"
 EOF
+
 
 
 # ====== Expose UDP ports ======
