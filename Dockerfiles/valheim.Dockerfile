@@ -38,7 +38,6 @@ RUN dpkg --add-architecture i386 && \
 
 # ====== Create steam user ======
 RUN useradd -m steam
-USER steam
 WORKDIR /home/steam
 
 # ====== Install SteamCMD ======
@@ -47,6 +46,8 @@ RUN mkdir -p $STEAMCMD_HOME && \
     wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz -O steamcmd_linux.tar.gz && \
     tar -xvzf steamcmd_linux.tar.gz && \
     rm steamcmd_linux.tar.gz
+
+USER steam
 
 # ====== Install Valheim dedicated server ======
 RUN $STEAMCMD_HOME/steamcmd.sh +login anonymous +force_install_dir $VALHEIM_HOME +app_update 896660 validate +quit
