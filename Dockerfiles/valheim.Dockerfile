@@ -73,7 +73,7 @@ set -eu
 cd /home/steam/valheim
 
 # Run Valheim server with BepInEx under xvfb (headless X)
-exec xvfb-run -a ./BepInEx/run_bepinex.sh ./valheim_server.x86_64 \
+exec xvfb-run -a ./run_bepinex.sh ./valheim_server.x86_64 \
     -nographics -batchmode \
     -name "${SERVER_NAME}" \
     -port "${PORT}" \
