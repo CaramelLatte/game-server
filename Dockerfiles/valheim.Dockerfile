@@ -3,6 +3,20 @@ FROM ubuntu:latest
 RUN dpkg --add-architecture i386 && \
     apt-get update && \
     apt-get install -y lib32gcc-s1 && \
+    libpulse0 \
+    libsdl2-2.0-0 \
+    libx11-6 \
+    libxcursor1 \
+    libxrandr2 \
+    libxi6 \
+    libgl1-mesa-glx \
+    wget \
+    unzip \
+    curl \
+    tar \
+    ca-certificates \
+    lib32gcc1 \
+    libstdc++6 \
     rm -rf /var/lib/apt/lists/*
 
 ENV SteamAppId=892970
