@@ -36,4 +36,4 @@ WORKDIR /home/steam/valheim
 
 # Note: Use the BepInEx startup script that comes with the linux build (if present),
 # or fallback to the original server start with modifications.
-ENTRYPOINT ["./start_server_bepinex.sh"]
+ENTRYPOINT ["./run_bepinex.sh"]
