@@ -59,7 +59,7 @@ RUN cd $VALHEIM_HOME && \
     rm bepinex.zip
 
 # ====== Add run_bepinex.sh script ======
-COPY valheim_run_bepinex.sh $VALHEIM_HOME/run_bepinex.sh
+COPY ./Dockerfiles/valheim_run_bepinex.sh $VALHEIM_HOME/run_bepinex.sh
 RUN chmod +x $VALHEIM_HOME/run_bepinex.sh
 # ====== Add run_valheim.sh script ======
 RUN cat > $VALHEIM_HOME/run_valheim.sh <<'EOF' && chmod +x $VALHEIM_HOME/run_valheim.sh
