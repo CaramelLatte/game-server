@@ -1,8 +1,17 @@
 FROM debian:bookworm-slim
 
 # Install dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates curl file nano wget lib32gcc-s1 lib32stdc++6 unzip \
+RUN dpkg --add-architecture i386 && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    wget \
+    unzip \
+    lib32gcc-s1 \
+    lib32stdc++6 \
+    libcurl4 \
+    libssl3 \
+    libgcc1 \
+    libstdc++6 \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
