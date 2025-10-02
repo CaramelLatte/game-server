@@ -35,4 +35,3 @@ EXPOSE 2456/udp 2457/udp 2458/udp
 # Set entrypoint to Valheim server with BepInEx
 WORKDIR /home/steam/valheim
 ENTRYPOINT ["./start_server_bepinex.sh"]
-```
