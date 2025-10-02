@@ -1,27 +1,30 @@
-FROM debian:bullseye-slim AS build-env
-ENV DEBIAN_FRONTEND=noninteractive
+FROM ubuntu:latest
 
+RUN dpkg --add-architecture i386 && \
+    apt-get update && \
+    apt-get install -y lib32gcc-s1 && \
+    rm -rf /var/lib/apt/lists/*
 
 ENV SteamAppId=892970
 ENV SteamGameId=892970
 ENV LD_LIBRARY_PATH=/home/gameserver/container-test/valheim:$LD_LIBRARY_PATH
 
-RUN apt-get update && apt-get install -y \
-    libpulse0 \
-    libsdl2-2.0-0 \
-    libx11-6 \
-    libxcursor1 \
-    libxrandr2 \
-    libxi6 \
-    libgl1-mesa-glx \
-    wget \
-    unzip \
-    curl \
-    tar \
-    ca-certificates \
-    lib32gcc1 \
-    libstdc++6 \
-    && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install -y \
+#     libpulse0 \
+#     libsdl2-2.0-0 \
+#     libx11-6 \
+#     libxcursor1 \
+#     libxrandr2 \
+#     libxi6 \
+#     libgl1-mesa-glx \
+#     wget \
+#     unzip \
+#     curl \
+#     tar \
+#     ca-certificates \
+#     lib32gcc1 \
+#     libstdc++6 \
+#     && rm -rf /var/lib/apt/lists/*
     
 
 RUN useradd -m -d /home/gameserver gameserver
