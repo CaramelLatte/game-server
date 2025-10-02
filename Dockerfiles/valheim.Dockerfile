@@ -63,13 +63,13 @@ COPY valheim_run_bepinex.sh $VALHEIM_HOME/run_bepinex.sh
 RUN chmod +x $VALHEIM_HOME/run_bepinex.sh
 # ====== Add run_valheim.sh script ======
 RUN cat > $VALHEIM_HOME/run_valheim.sh <<'EOF' && chmod +x $VALHEIM_HOME/run_valheim.sh
-    #!/bin/sh
-    # Wrapper to launch Valheim + BepInEx in headless X
-    cd /home/steam/valheim
+#!/bin/sh
+# Wrapper to launch Valheim + BepInEx in headless X
+cd /home/steam/valheim
 
-    # Pass all arguments through
-    exec xvfb-run -a ./run_bepinex.sh "$@"
-    EOF
+# Pass all arguments through
+exec xvfb-run -a ./run_bepinex.sh "$@"
+EOF
 
 
 # ====== Expose UDP ports ======
