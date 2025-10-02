@@ -21,7 +21,7 @@ RUN dpkg --add-architecture i386 && \
     libglu1-mesa \
     libxinerama1 \
     libxcursor1 \
-    libxi6
+    libxi6 \
     xvfb \
     xauth \
     x11-utils \
