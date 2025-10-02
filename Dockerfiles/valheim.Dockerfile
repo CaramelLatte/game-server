@@ -1,8 +1,13 @@
-FROM ubuntu:latest
+FROM ubuntu:20.04
 
-RUN dpkg --add-architecture i386 && \
-    apt-get update && \
-    apt-get install -y lib32gcc-s1 && \
+ENV DEBIAN_FRONTEND=noninteractive
+
+
+ENV SteamAppId=892970
+ENV SteamGameId=892970
+ENV LD_LIBRARY_PATH=/home/gameserver/container-test/valheim:$LD_LIBRARY_PATH
+
+RUN apt-get update && apt-get install -y \
     libpulse0 \
     libsdl2-2.0-0 \
     libx11-6 \
@@ -17,28 +22,7 @@ RUN dpkg --add-architecture i386 && \
     ca-certificates \
     lib32gcc1 \
     libstdc++6 \
-    rm -rf /var/lib/apt/lists/*
-
-ENV SteamAppId=892970
-ENV SteamGameId=892970
-ENV LD_LIBRARY_PATH=/home/gameserver/container-test/valheim:$LD_LIBRARY_PATH
-
-# RUN apt-get update && apt-get install -y \
-#     libpulse0 \
-#     libsdl2-2.0-0 \
-#     libx11-6 \
-#     libxcursor1 \
-#     libxrandr2 \
-#     libxi6 \
-#     libgl1-mesa-glx \
-#     wget \
-#     unzip \
-#     curl \
-#     tar \
-#     ca-certificates \
-#     lib32gcc1 \
-#     libstdc++6 \
-#     && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
     
 
 RUN useradd -m -d /home/gameserver gameserver
@@ -55,7 +39,7 @@ RUN wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz 
     && tar -xvzf steamcmd_linux.tar.gz \
     && rm steamcmd_linux.tar.gz
 RUN mkdir -p /home/gameserver/container-test/valheim && chown gameserver:gameserver /home/gameserver/container-test/valheim
-# RUN cp /opt/steamcmd/linux32/steamclient.so /home/gameserver/container-test/valheim/
+RUN cp /opt/steamcmd/linux32/steamclient.so /home/gameserver/container-test/valheim/
 
 # RUN ./steamcmd.sh +force_install_dir /home/gameserver/container-test/valheim \
 #     +login anonymous \
