@@ -29,6 +29,12 @@ RUN cd /home/steam && \
     unzip bepinex.zip -d valheim && \
     rm bepinex.zip
 
+
+    
+COPY valheim_run_bepinex.sh /home/steam/valheim/run_bepinex.sh
+RUN sed -i 's/\r$//' /home/steam/valheim/run_bepinex.sh && chmod +x /home/steam/valheim/run_bepinex.sh
+
+
 # Make sure the BepInEx run script is executable
 RUN chmod u+x /home/steam/valheim/run_bepinex.sh
 # Expose default ports
