@@ -29,6 +29,8 @@ RUN cd /home/steam && \
     unzip bepinex.zip -d valheim && \
     rm bepinex.zip
 
+# Make sure the BepInEx run script is executable
+RUN chmod u+x /home/steam/valheim/run_bepinex.sh
 # Expose default ports
 EXPOSE 2456/udp 2457/udp 2458/udp
 
