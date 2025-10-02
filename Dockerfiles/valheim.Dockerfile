@@ -31,7 +31,7 @@ RUN cd /home/steam && \
 
 
     
-COPY valheim_run_bepinex.sh /home/steam/valheim/run_bepinex.sh
+COPY ./Dockerfiles/valheim_run_bepinex.sh /home/steam/valheim/run_bepinex.sh
 RUN sed -i 's/\r$//' /home/steam/valheim/run_bepinex.sh && chmod +x /home/steam/valheim/run_bepinex.sh
 
 
