@@ -58,34 +58,23 @@ RUN cd $VALHEIM_HOME && \
     unzip bepinex.zip -d $VALHEIM_HOME && \
     rm bepinex.zip
 
-# ====== Create run_bepinex.sh wrapper ======
-RUN cat > $VALHEIM_HOME/run_bepinex.sh <<'EOF' && chmod +x $VALHEIM_HOME/run_bepinex.sh
-#!/bin/sh
-set -eu
+# ====== Add run_bepinex.sh script ======
+COPY valheim_run_bepinex.sh $VALHEIM_HOME/run_bepinex.sh
+RUN chmod +x $VALHEIM_HOME/run_bepinex.sh
+# ====== Add run_valheim.sh script ======
+RUN cat > $VALHEIM_HOME/run_valheim.sh <<'EOF' && chmod +x $VALHEIM_HOME/run_valheim.sh
+    #!/bin/sh
+    # Wrapper to launch Valheim + BepInEx in headless X
+    cd /home/steam/valheim
 
-: "${SERVER_NAME:=My Valheim Server}"
-: "${WORLD_NAME:=Dedicated}"
-: "${SERVER_PASS:=secret}"
-: "${PORT:=2456}"
-: "${PUBLIC:=1}"
-: "${ADDITIONAL_ARGS:=}"
+    # Pass all arguments through
+    exec xvfb-run -a ./run_bepinex.sh "$@"
+    EOF
 
-cd /home/steam/valheim
-
-# Run Valheim server with BepInEx under xvfb (headless X)
-exec xvfb-run -a ./valheim_server.x86_64 \
-    -nographics -batchmode \
-    -name "${SERVER_NAME}" \
-    -port "${PORT}" \
-    -world "${WORLD_NAME}" \
-    -password "${SERVER_PASS}" \
-    -public "${PUBLIC}" \
-    ${ADDITIONAL_ARGS} "$@"
-EOF
 
 # ====== Expose UDP ports ======
 EXPOSE 2456/udp 2457/udp 2458/udp
 
 # ====== Set workdir and entrypoint ======
 WORKDIR $VALHEIM_HOME
-ENTRYPOINT ["./run_bepinex.sh"]
+ENTRYPOINT ["./run_valheim.sh"]
