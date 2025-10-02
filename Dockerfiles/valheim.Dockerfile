@@ -54,7 +54,7 @@ RUN $STEAMCMD_HOME/steamcmd.sh +login anonymous +force_install_dir $VALHEIM_HOME
 
 # ====== Install BepInEx (Linux x64 stable) ======
 RUN cd $VALHEIM_HOME && \
-    wget -q https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_x64_5.4.23.2.zip -O bepinex.zip && \
+    wget -q https://sourceforge.net/projects/bepinex.mirror/files/v5.4.22/BepInEx_unix_5.4.22.0.zip/download -O bepinex.zip && \
     unzip bepinex.zip -d $VALHEIM_HOME && \
     rm bepinex.zip
 
