@@ -39,7 +39,7 @@ RUN wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz 
     && tar -xvzf steamcmd_linux.tar.gz \
     && rm steamcmd_linux.tar.gz
 RUN mkdir -p /home/gameserver/container-test/valheim && chown gameserver:gameserver /home/gameserver/container-test/valheim
-# RUN cp /home/gameserver/container-test/steamcmd/linux32/steamclient.so /home/gameserver/container-test/valheim/
+# RUN cp /home/gameserver/.steam/linux32/steamclient.so /home/gameserver/container-test/valheim/
 
 # RUN ./steamcmd.sh +force_install_dir /home/gameserver/container-test/valheim \
 #     +login anonymous \
@@ -62,9 +62,9 @@ RUN echo '#!/bin/bash' > /home/gameserver/container-test/valheim/start-server.sh
     echo 'export LD_LIBRARY_PATH=/home/gameserver/container-test/valheim:$LD_LIBRARY_PATH' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo '' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo 'if [ ! -f /home/gameserver/container-test/valheim/valheim_server.x86_64 ]; then' >> /home/gameserver/container-test/valheim/start-server.sh && \
-    echo 'cp /home/gameserver/container-test/steamcmd/linux32/steamclient.so /home/gameserver/container-test/valheim/' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo 'cp /home/gameserver/.steam/linux32/steamclient.so /home/gameserver/container-test/valheim/' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo '  echo "Installing Valheim server via SteamCMD..."' >> /home/gameserver/container-test/valheim/start-server.sh && \
-    echo '  /home/gameserver/container-test/steamcmd/steamcmd.sh +login anonymous \\' >> /home/gameserver/container-test/valheim/start-server.sh && \
+    echo '  /home/gameserver/.steam/steamcmd.sh +login anonymous \\' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo '    +force_install_dir /home/gameserver/container-test/valheim \\' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo '    +app_update 896660 validate \\' >> /home/gameserver/container-test/valheim/start-server.sh && \
     echo '    +quit' >> /home/gameserver/container-test/valheim/start-server.sh && \
