@@ -15,6 +15,13 @@ RUN dpkg --add-architecture i386 && \
     libssl3 \
     libgcc1 \
     libstdc++6 \
+    libc6:i386 \
+    libx11-6 \
+    libxrandr2 \
+    libglu1-mesa \
+    libxinerama1 \
+    libxcursor1 \
+    libxi6
     xvfb \
     xauth \
     x11-utils \
@@ -54,7 +61,7 @@ RUN sed -i 's/\r$//' /home/steam/valheim/run_bepinex.sh && chmod +x /home/steam/
 RUN chmod u+x /home/steam/valheim/run_bepinex.sh
 # Expose default ports
 EXPOSE 2456/udp 2457/udp 2458/udp
-
+ENV HOME=/home/steam
 WORKDIR /home/steam/valheim
 
 # Note: Use the BepInEx startup script that comes with the linux build (if present),
