@@ -2,7 +2,7 @@ import docker
 import os
 from utils import get_steam_username
 import logging
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Union
 
 # Configure logging for the module
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -16,19 +16,21 @@ class GameServer:
         image: str,
         container_name: str,
         env_vars: Optional[Dict[str, str]] = None,
-        volume: Optional[str] = None,
-        log_strings: Optional[Dict[str, str]] = None
+        volume: Optional[Union[str, Dict[str, str]]] = None,  # accept string (legacy) or dict {"host": "...", "container": "...">
+        log_strings: Optional[Dict[str, str]] = None,
+        mods: Optional[Dict[str, str]] = None,
     ) -> None:
-        self.name: str = name  #name of the game server
-        self.icon: str = icon  #filename sans extension of the game server icon
-        self.ports: List[int] = ports  #ports used by the game server
-        self.image: str = image  #Docker image name
-        self.container_name: str = container_name  #Docker container name
-        self.env_vars: Dict[str, str] = env_vars or {}  #environment variables for the container
-        self.volume: Optional[str] = volume  #directory path to mount
-        self.log_strings: Optional[Dict[str, str]] = log_strings  #log strings for player connection/disconnection
-        self.running: bool = False  #whether the server is running
-        self.client: docker.DockerClient = docker.from_env()  # Initialize Docker client
+        self.name: str = name
+        self.icon: str = icon
+        self.ports: List[int] = ports
+        self.image: str = image
+        self.container_name: str = container_name
+        self.env_vars: Dict[str, str] = env_vars or {}
+        self.volume: Optional[Union[str, Dict[str, str]]] = volume  # host path or {"host": "...", "container": "...">
+        self.log_strings: Optional[Dict[str, str]] = log_strings
+        self.running: bool = False
+        self.client: docker.DockerClient = docker.from_env()
+        self.mods: Dict[str, str] = mods or {}
 
     def get_connected_players(self) -> List[str]:
         try:
@@ -129,7 +131,7 @@ class GameServer:
                             name=self.container_name,
                             ports={**{f"{port}/tcp": port for port in self.ports}, **{f"{port}/udp": port for port in self.ports}},
                             environment=self.env_vars,
-                            volumes={self.volume: {'bind': self.volume,  'mode': 'rw'}},
+                            volumes=self._build_volumes(),
                             detach=True,
                         )
                         logging.info(f"{self.name} server container created and started.")
@@ -168,6 +170,44 @@ class GameServer:
             logging.error(f"Unexpected error while pulling image {self.image}: {e}")
             return f"Unexpected error: {e}"
 
+    def _build_volumes(self) -> Dict[str, Dict[str, str]]:
+        """
+        Build a docker-py compatible volumes dict.
+        Accepts:
+          - self.volume as a string -> host path mounted to the same path inside container
+          - self.volume as dict -> {"host": "/host/path", "container": "/container/path"}
+          - self.mods as dict -> {"host_mod_path": "/host/path", "container_mod_path": "/container/path"}
+        Ensures host directories exist (os.makedirs(..., exist_ok=True)) to avoid Docker creating unexpected dirs.
+        """
+        vols: Dict[str, Dict[str, str]] = {}
+
+        # base volume handling
+        if isinstance(self.volume, dict):
+            host_base = self.volume.get("host")
+            container_base = self.volume.get("container")
+            if host_base and container_base:
+                host_base_abs = os.path.abspath(host_base)
+                os.makedirs(host_base_abs, exist_ok=True)
+                vols[host_base_abs] = {"bind": container_base, "mode": "rw"}
+        elif isinstance(self.volume, str) and self.volume:
+            host_base_abs = os.path.abspath(self.volume)
+            os.makedirs(host_base_abs, exist_ok=True)
+            # bind to same path inside container (legacy behavior)
+            vols[host_base_abs] = {"bind": self.volume, "mode": "rw"}
+
+        # mods mapping (optional)
+        if isinstance(self.mods, dict) and self.mods:
+            host_mod = self.mods.get("host_mod_path")
+            container_mod = self.mods.get("container_mod_path")
+            if host_mod and container_mod:
+                host_mod_abs = os.path.abspath(host_mod)
+                # avoid duplicate host path keys
+                if host_mod_abs not in vols:
+                    os.makedirs(host_mod_abs, exist_ok=True)
+                    vols[host_mod_abs] = {"bind": container_mod, "mode": "rw"}
+
+        return vols
+
 # Define the game list and add individual game server objects to it
 game_list = []
 
@@ -186,7 +226,8 @@ minecraft_serv = GameServer(
         "disconnect_head": ": ",
         "disconnect_tail": "left the game",
         "new_instance": "Done (",
-    }
+    },
+    {}
 )
 val_serv = GameServer(
     "Valheim",
@@ -194,7 +235,7 @@ val_serv = GameServer(
     [2456, 2457],
     "lloesche/valheim-server",
     "valheim-server",
-    {"SERVER_NAME": "ValheimServer", "WORLD_NAME": "nerds", "SERVER_PASS": "secret"},
+    {"SERVER_NAME": "Nerds", "WORLD_NAME": "Nerdaria", "SERVER_PASS": "onlynerdsplayvalheim", "BEPINEX": "true"},
     "/home/gameserver/valheim/",
     {
         "connect_head": "Got handshake from client ",
@@ -202,7 +243,8 @@ val_serv = GameServer(
         "disconnect_head": "Closing socket ",
         "disconnect_tail": "",
         "new_instance": "Starting Valheim server",
-    }
+    }, 
+    {"container_mod_path": "/valheim/BepInEx/plugins/", "host_mod_path": "/home/gameserver/valheim/BepInEx/plugins/"}  
 )
 seven_days_serv = GameServer(
     "7 Days to Die",
@@ -218,7 +260,8 @@ seven_days_serv = GameServer(
         "disconnect_head": "GMSG: Player '",
         "disconnect_tail": "' left the game",
         "new_instance": "Running as user: docker",
-    }
+    },
+    {}
 )
 pal_server = GameServer(
     "Palworld",
@@ -234,7 +277,8 @@ pal_server = GameServer(
         "disconnect_head": "[LOG] ",
         "disconnect_tail": " left the server",
         "new_instance": "Running Palworld dedicated server",
-    }
+    },
+    {}
 )
 
 vrising_serv = GameServer(
@@ -251,7 +295,8 @@ vrising_serv = GameServer(
         "disconnect_head": "EndAuthSession platformId: ",
         "disconnect_tail": "",
         "new_instance": "Launching wine64 V Rising",
-    }
+    },
+    {}
 )
 
 terraria_serv = GameServer(
@@ -268,7 +313,8 @@ terraria_serv = GameServer(
         "disconnect_head": "",
         "disconnect_tail": " has left", 
         "new_instance": ": Server Started",
-    }
+    },
+    {}
 )
 
 game_list.append(minecraft_serv)
