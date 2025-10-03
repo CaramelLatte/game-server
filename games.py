@@ -233,9 +233,9 @@ val_serv = GameServer(
     "Valheim",
     "valheim",
     [2456, 2457],
-    "lloesche/valheim-server",
+    "mbround18/valheim",
     "valheim-server",
-    {"SERVER_NAME": "Nerds", "WORLD_NAME": "Nerdaria", "SERVER_PASS": "onlynerdsplayvalheim", "BEPINEX": "true"},
+    {"NAME": "Nerds", "WORLD": "Nerdaria", "PUBLIC": 1, "PASSWORD": "onlynerdsplayvalheim", "TYPE": "BepInEx"},
     "/home/gameserver/valheim/",
     {
         "connect_head": "Got handshake from client ",
