@@ -118,13 +118,10 @@ class GameServer:
                         # If the container doesn't exist, check if the image exists and pull it if not
                         images = self.client.images.list(name=self.image)
                         if not images:
-                            # Build the image if it doesn't exist
-                            build_result = self.build_image()
-                            logging.info(build_result)
-                            images = self.client.images.list(name=self.image)
-                            if not images:
-                                logging.error(f"Image {self.image} still not found after build.")
-                                return f"Error: Image {self.image} could not be built."
+                            #pull the image if it doesn't exist
+                            pull_result = self.pull_image()
+                            logging.info(f"Pulled image for {self.name}: {pull_result}")
+                            return f"Pulled image for {self.name}: {pull_result}"
 
                         # Now safe to run
                         self.client.containers.run(
@@ -159,21 +156,17 @@ class GameServer:
             logging.error(f"Unexpected error while executing '{command}' on {self.name}: {e}")
             return f"Unexpected error: {e}"
         
-    def build_image(self) -> str:
+    def pull_image(self) -> str:
         try:
-            self.client.images.build(
-                path=".",
-                dockerfile=f"Dockerfiles/{self.name}.Dockerfile",
-                tag=self.image
-            )
-            logging.info(f"Docker image for {self.name} built successfully.")
-            return f"Image for {self.name} built successfully."
-        except docker.errors.BuildError as e:
-            logging.error(f"Error building Docker image for {self.name}: {e}")
-            return f"Error building image for {self.name}."
+            self.client.images.pull(self.image)
+            logging.info(f"Image {self.image} pulled successfully.")
+            return f"Image {self.image} pulled successfully."
+        except docker.errors.APIError as e:
+            logging.error(f"Docker API error while pulling image {self.image}: {e}")
+            return f"Error pulling image {self.image}"
         except Exception as e:
-            logging.error(f"Unexpected error building image for {self.name}: {e}")
-            return f"Unexpected error: {e}" 
+            logging.error(f"Unexpected error while pulling image {self.image}: {e}")
+            return f"Unexpected error: {e}"
 
 # Define the game list and add individual game server objects to it
 game_list = []
@@ -199,8 +192,8 @@ val_serv = GameServer(
     "Valheim",
     "valheim",
     [2456, 2457],
-    "valheim-modded",
-    "valheim-modded",
+    "lloesche/valheim-server",
+    "valheim-server",
     {"SERVER_NAME": "ValheimServer", "WORLD_NAME": "nerds", "SERVER_PASS": "secret"},
     "/home/gameserver/valheim/",
     {
