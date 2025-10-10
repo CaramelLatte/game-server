@@ -30,7 +30,6 @@ class GameServer:
         self.log_strings: Optional[Dict[str, str]] = log_strings
         self.running: bool = False
         self.client: docker.DockerClient = docker.from_env()
-        self.mods: Dict[str, str] = mods or {}
 
     def get_connected_players(self) -> List[str]:
         try:
@@ -180,33 +179,31 @@ class GameServer:
         Ensures host directories exist (os.makedirs(..., exist_ok=True)) to avoid Docker creating unexpected dirs.
         """
         vols: Dict[str, Dict[str, str]] = {}
-
-        # base volume handling
-        if isinstance(self.volume, dict):
-            host_base = self.volume.get("host")
-            container_base = self.volume.get("container")
-            if host_base and container_base:
-                host_base_abs = os.path.abspath(host_base)
-                os.makedirs(host_base_abs, exist_ok=True)
-                vols[host_base_abs] = {"bind": container_base, "mode": "rw"}
-        elif isinstance(self.volume, str) and self.volume:
-            host_base_abs = os.path.abspath(self.volume)
-            os.makedirs(host_base_abs, exist_ok=True)
-            # bind to same path inside container (legacy behavior)
-            vols[host_base_abs] = {"bind": self.volume, "mode": "rw"}
-
-        # mods mapping (optional)
-        if isinstance(self.mods, dict) and self.mods:
-            host_mod = self.mods.get("host_mod_path")
-            container_mod = self.mods.get("container_mod_path")
-            if host_mod and container_mod:
-                host_mod_abs = os.path.abspath(host_mod)
-                # avoid duplicate host path keys
-                if host_mod_abs not in vols:
-                    os.makedirs(host_mod_abs, exist_ok=True)
-                    vols[host_mod_abs] = {"bind": container_mod, "mode": "rw"}
-
+        
+        host_base = self.volume
+        container_base = self._get_image_working_dir()
+        host_base_abs = os.path.abspath(host_base)
+        os.makedirs(host_base_abs, exist_ok=True)
+        vols[host_base_abs] = {"bind": container_base, "mode": "rw"}
         return vols
+
+    def _get_image_working_dir(self) -> str:
+        try:
+            image = self.client.images.get(self.image)
+            image_config = image.attrs['Config']
+            work_dir = image_config.get('WorkingDir')
+            if work_dir:
+                logging.info(f"Found working directory for {self.image}: {work_dir}")
+                return work_dir
+            else:
+                logging.warning(f"No WorkingDir found in {self.image}, using default /data")
+                return '/data'
+        except docker.errors.ImageNotFound:
+            logging.error(f"Image: {self.image} not found, using default /data")
+            return '/data'
+        except Exception as e:
+            logging.error(f"An error occurred: {e}, using default /data")
+            return '/data'
 
 # Define the game list and add individual game server objects to it
 game_list = []
@@ -227,7 +224,6 @@ minecraft_serv = GameServer(
         "disconnect_tail": "left the game",
         "new_instance": "Done (",
     },
-    {}
 )
 val_serv = GameServer(
     "Valheim",
@@ -244,7 +240,6 @@ val_serv = GameServer(
         "disconnect_tail": "",
         "new_instance": "Starting Valheim server",
     }, 
-    {"container_mod_path": "/valheim/BepInEx/plugins/", "host_mod_path": "/home/gameserver/valheim/BepInEx/plugins/"}  
 )
 seven_days_serv = GameServer(
     "7 Days to Die",
@@ -261,7 +256,6 @@ seven_days_serv = GameServer(
         "disconnect_tail": "' left the game",
         "new_instance": "Running as user: docker",
     },
-    {}
 )
 pal_server = GameServer(
     "Palworld",
@@ -278,7 +272,6 @@ pal_server = GameServer(
         "disconnect_tail": " left the server",
         "new_instance": "Running Palworld dedicated server",
     },
-    {}
 )
 
 vrising_serv = GameServer(
@@ -296,7 +289,6 @@ vrising_serv = GameServer(
         "disconnect_tail": "",
         "new_instance": "Launching wine64 V Rising",
     },
-    {}
 )
 
 terraria_serv = GameServer(
@@ -314,7 +306,6 @@ terraria_serv = GameServer(
         "disconnect_tail": " has left", 
         "new_instance": ": Server Started",
     },
-    {}
 )
 
 game_list.append(minecraft_serv)
@@ -323,4 +314,3 @@ game_list.append(seven_days_serv)
 game_list.append(pal_server)
 game_list.append(vrising_serv)
 game_list.append(terraria_serv)
-#PERSONAL NOTE: persistent data for these servers is stored at /var/lib/docker/volumes/, from here you can find the correct directory to enter by doing ls -lt, the optional flag to sort by date. When changing settings on a server, change them this way instead of the mirrored directory defined in the server object
