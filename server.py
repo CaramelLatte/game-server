@@ -67,7 +67,7 @@ if __name__ == "__main__":
         privkey = os.getenv("SSL_PRIVKEY")
         if not chain or not privkey:
             raise ValueError("SSL_CHAIN or SSL_PRIVKEY environment variables are not set.")
-        app.run(ssl_context=(chain, privkey), host="0.0.0.0", port=8080)
+        app.run(ssl_context=(chain, privkey), host="0.0.0.0", port=5002)
     except Exception as e:
         logging.error(f"Error starting the server: {e}")
 

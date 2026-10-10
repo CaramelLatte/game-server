@@ -215,7 +215,7 @@ minecraft_serv = GameServer(
     [25565],
     "itzg/minecraft-server",
     "minecraft_server",
-    {"EULA": "TRUE"},
+    {"EULA": "TRUE", "VERSION": "26.1"},
     "/home/gameserver/minecraft/",
     {
         "connect_head": ": ",
