@@ -1,11 +1,16 @@
 import docker
+from docker.utils import parse_repository_tag
 import os
+import threading
 from utils import get_steam_username
 import logging
 from typing import List, Dict, Optional, Union
 
 # Configure logging for the module
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# States reported to the site. While a start/stop is in one of the busy states, the worker thread owns the state.
+BUSY_STATES = {"pulling", "starting", "stopping"}
 
 class GameServer:
     def __init__(
@@ -29,7 +34,33 @@ class GameServer:
         self.volume: Optional[Union[str, Dict[str, str]]] = volume  # host path or {"host": "...", "container": "...">
         self.log_strings: Optional[Dict[str, str]] = log_strings
         self.running: bool = False
+        self.state: str = "stopped"  # stopped | pulling | starting | running | stopping | error
+        self.detail: str = ""  # short human-readable note for the current state
+        self.progress: Optional[int] = None  # percent, only while pulling
+        self._lock = threading.Lock()
         self.client: docker.DockerClient = docker.from_env()
+
+    def set_state(self, state: str, detail: str = "", progress: Optional[int] = None) -> None:
+        with self._lock:
+            self.state, self.detail, self.progress = state, detail, progress
+
+    def request(self, command: str) -> bool:
+        # Run start/stop in the background so a long image pull doesn't hold the HTTP request open (nginx gives up after 60s).
+        # Returns False if another action on this game is still in progress.
+        with self._lock:
+            if self.state in BUSY_STATES:
+                return False
+            self.state = "starting" if command == "start" else "stopping"
+            self.detail, self.progress = "", None
+        threading.Thread(target=self._run_cmd, args=(command,), daemon=True).start()
+        return True
+
+    def _run_cmd(self, command: str) -> None:
+        self.exec_cmd(command)
+        # exec_cmd leaves the state alone when there was nothing to do (already running/stopped), so settle it here.
+        with self._lock:
+            if self.state in BUSY_STATES:
+                self.state, self.detail, self.progress = ("running" if self.running else "stopped"), "", None
 
     def get_connected_players(self) -> List[str]:
         try:
@@ -93,15 +124,24 @@ class GameServer:
         return connected_players
 
     def check_if_running(self) -> None:
-        try:
-            container = self.client.containers.get(self.container_name)
-            self.running = container.status == "running"
-        except docker.errors.NotFound:
-            self.running = False
-            logging.warning(f"Container {self.container_name} not found.")
-        except Exception as e:
-            self.running = False
-            logging.error(f"Error checking if {self.name} is running: {e}")
+        with self._lock:
+            try:
+                container = self.client.containers.get(self.container_name)
+                self.running = container.status == "running"
+                exit_code = container.attrs.get("State", {}).get("ExitCode", 0)
+                # A server we last saw running that exits non-zero on its own crashed (docker stop gives 0, 137 or 143).
+                if self.state == "running" and container.status == "exited" and exit_code not in (0, 137, 143):
+                    logging.error(f"{self.name} server exited unexpectedly with code {exit_code}.")
+                    self.state, self.detail, self.progress = "error", f"Server crashed (exit code {exit_code})", None
+            except docker.errors.NotFound:
+                self.running = False
+                logging.warning(f"Container {self.container_name} not found.")
+            except Exception as e:
+                self.running = False
+                logging.error(f"Error checking if {self.name} is running: {e}")
+            # Leave busy states to the worker, and keep an error visible until the server comes up or someone tries again.
+            if self.state not in BUSY_STATES and not (self.state == "error" and not self.running):
+                self.state, self.detail, self.progress = ("running" if self.running else "stopped"), "", None
 
     def exec_cmd(self, command: str) -> str:
         try:
@@ -112,7 +152,10 @@ class GameServer:
                         # Check if the container already exists
                         container = self.client.containers.get(self.container_name)
                         # Start the existing container
+                        self.set_state("starting", "Starting container")
                         container.start()
+                        self.running = True
+                        self.set_state("running")
                         logging.info(f"{self.name} server started.")
                         return f"{self.name} started"
                     except docker.errors.NotFound:
@@ -120,10 +163,14 @@ class GameServer:
                         images = self.client.images.list(name=self.image)
                         if not images:
                             #pull the image if it doesn't exist, then fall through and create the container in the same request
+                            self.set_state("pulling", "Downloading Docker image", 0)
                             pull_result = self.pull_image()
                             logging.info(f"Pulled image for {self.name}: {pull_result}")
                             if not self.client.images.list(name=self.image):
+                                self.set_state("error", "Docker image download failed")
                                 return f"Failed to pull image for {self.name}: {pull_result}"
+
+                        self.set_state("starting", "Creating container")
 
                         # Now safe to run
                         self.client.containers.run(
@@ -134,6 +181,8 @@ class GameServer:
                             volumes=self._build_volumes(),
                             detach=True,
                         )
+                        self.running = True
+                        self.set_state("running")
                         logging.info(f"{self.name} server container created and started.")
                         return f"{self.name} started"
                 else:
@@ -142,7 +191,10 @@ class GameServer:
             elif command == "stop":
                 if self.running:
                     container = self.client.containers.get(self.container_name)
+                    self.set_state("stopping", "Saving and shutting down")
                     container.stop()
+                    self.running = False
+                    self.set_state("stopped")
                     logging.info(f"{self.name} server stopped.")
                     return f"{self.name} stopped"
                 else:
@@ -153,14 +205,44 @@ class GameServer:
                 return f"Unknown command: {command}"
         except docker.errors.APIError as e:
             logging.error(f"Docker API error while executing '{command}' on {self.name}: {e}")
+            self.set_state("error", f"Docker error during {command}")
             return f"Error executing '{command}' on {self.name}"
         except Exception as e:
             logging.error(f"Unexpected error while executing '{command}' on {self.name}: {e}")
+            self.set_state("error", f"Unexpected error during {command}")
             return f"Unexpected error: {e}"
         
     def pull_image(self) -> str:
         try:
-            self.client.images.pull(self.image)
+            # Stream the pull so /update can show progress: bytes downloaded across layers, then bytes extracted.
+            repo, tag = parse_repository_tag(self.image)
+            downloaded: Dict[str, List[int]] = {}
+            extracted: Dict[str, List[int]] = {}
+            percent = 0
+            for event in self.client.api.pull(repo, tag=tag or "latest", stream=True, decode=True):
+                if "error" in event:
+                    raise docker.errors.APIError(event["error"])
+                layer, status = event.get("id"), event.get("status", "")
+                detail = event.get("progressDetail") or {}
+                if not layer:
+                    continue
+                if status == "Downloading" and detail.get("total"):
+                    downloaded[layer] = [detail.get("current", 0), detail["total"]]
+                elif status == "Download complete" and layer in downloaded:
+                    downloaded[layer][0] = downloaded[layer][1]
+                elif status == "Extracting" and detail.get("total"):
+                    extracted[layer] = [detail.get("current", 0), detail["total"]]
+                else:
+                    continue
+                if extracted:
+                    phase, layers = "Unpacking Docker image", extracted
+                else:
+                    phase, layers = "Downloading Docker image", downloaded
+                total = sum(t for _, t in layers.values())
+                # Layer sizes arrive as each layer starts, so don't let the bar slide backwards within a phase.
+                new_percent = int(100 * sum(c for c, _ in layers.values()) / total) if total else 0
+                percent = new_percent if phase != self.detail else max(percent, new_percent)
+                self.set_state("pulling", phase, min(percent, 100))
             logging.info(f"Image {self.image} pulled successfully.")
             return f"Image {self.image} pulled successfully."
         except docker.errors.APIError as e:

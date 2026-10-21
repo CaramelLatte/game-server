@@ -5,7 +5,7 @@ import logging
 import os
 import requests
 import subprocess
-from games import game_list
+from games import game_list, BUSY_STATES
 
 class ServerManager:
     #Class to manage the state and operations of game servers.
@@ -18,12 +18,13 @@ class ServerManager:
 
     def get_server_status(self) -> None:
         try:
-            self.active_server = ""
+            # Build the answer locally so a start request never sees a momentarily empty active_server.
+            active = ""
             for game in game_list:
                 game.check_if_running()
-                if game.running:
-                    self.active_server = game.name
-                    break
+                if not active and (game.running or game.state in BUSY_STATES):
+                    active = game.name
+            self.active_server = active
         except Exception as e:
             logging.error(f"Error getting server status: {e}")
 

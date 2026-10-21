@@ -2,7 +2,11 @@ from flask import Blueprint, send_file, jsonify
 import datetime
 import logging
 import json
+import threading
 from manager import server_manager
+
+# Serialises the "is another server active?" check with marking this one active, so two starts can't both get through.
+control_lock = threading.Lock()
 
 # Create a blueprint for game-related routes
 game_bp=Blueprint("game_bp", __name__)
@@ -17,6 +21,9 @@ def serv_stats():
                 "name": game.name,
                 "icon": game.icon,
                 "status": game.running,
+                "state": game.state,
+                "detail": game.detail,
+                "progress": game.progress,
                 "port": game.ports[0]
             })
         return json.dumps({
@@ -59,25 +66,28 @@ def exec_cmd_on_game(gameid: str, cmd: str):
     try:
         for game in server_manager.game_list:
             if game.name.lower() == gameid.lower():
-                result = game.exec_cmd(cmd.lower())
-                if cmd == "start":
-                    if server_manager.active_server and server_manager.active_server != game.name:
-                        logging.warning(f"Attempted to start {game.name} while {server_manager.active_server} is already running.")
-                        return jsonify({"error": "Another server is already running"}), 400
-                    if "started" in result:
+                # start/stop run in the background; poll /update for state, detail and progress.
+                with control_lock:
+                    if cmd.lower() == "start":
+                        if server_manager.active_server and server_manager.active_server != game.name:
+                            logging.warning(f"Attempted to start {game.name} while {server_manager.active_server} is already running.")
+                            return jsonify({"error": "Another server is already running"}), 400
+                        if not game.request("start"):
+                            return jsonify({"error": f"{game.name} is busy ({game.state})"}), 409
                         server_manager.active_server = game.name
                         server_manager.empty_time = datetime.datetime.now()
-                        logging.info(f"{game.name} server started.")
-                elif cmd == "stop":
-                    if "stopped" in result:
-                        server_manager.active_server = ""
-                        server_manager.connected_players = []
-                        logging.info(f"{game.name} server stopped.")
+                    else:
+                        if not game.request("stop"):
+                            return jsonify({"error": f"{game.name} is busy ({game.state})"}), 409
+                        if server_manager.active_server == game.name:
+                            server_manager.connected_players = []
+                logging.info(f"{game.name} {cmd.lower()} requested.")
                 return jsonify({
                     "active_server": server_manager.active_server,
                     "player_count": len(server_manager.connected_players),
                     "players": server_manager.connected_players,
-                    "result": result
+                    "state": game.state,
+                    "result": f"{game.name} {cmd.lower()} requested"
                 })
         logging.error(f"Game {gameid} not found.")
         return jsonify({"error": "Game not found"}), 404
