@@ -14,6 +14,8 @@ def get_steam_username(steam_id):
             STEAM_SUMMARIES_URL,
             params={"key": api_key, "steamids": steam_id},
             timeout=5,
+            # REQUESTS_CA_BUNDLE points at our self-signed cert for the health check, so use the public CA bundle here
+            verify=requests.certs.where(),
         )
         response.raise_for_status()
         players = response.json().get("response", {}).get("players", [])
