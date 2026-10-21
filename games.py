@@ -275,9 +275,13 @@ class GameServer:
                 rel = container_path.lstrip("/")
             host_path = os.path.normpath(os.path.join(host_base_abs, rel))
             os.makedirs(host_path, exist_ok=True)
-            # Images that run as a non-root user can't write to a fresh root-owned bind mount, so hand empty dirs to that user.
-            if uid and not os.listdir(host_path):
-                os.chown(host_path, uid, uid)
+            # Dirs we create belong to the service user (gameserver, uid 1000), which suits most images. If the image runs as
+            # another non-root uid, try to hand it the empty dir; that needs root, so only warn when it isn't possible.
+            if uid and not os.listdir(host_path) and os.stat(host_path).st_uid != uid:
+                try:
+                    os.chown(host_path, uid, uid)
+                except PermissionError:
+                    logging.warning(f"{self.name}: can't chown {host_path} to uid {uid}; the server may not be able to write there.")
             vols[host_path] = {"bind": container_path, "mode": "rw"}
             logging.info(f"{self.name}: mounting {host_path} at {container_path}")
         return vols
