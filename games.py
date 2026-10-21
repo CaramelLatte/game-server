@@ -119,10 +119,11 @@ class GameServer:
                         # If the container doesn't exist, check if the image exists and pull it if not
                         images = self.client.images.list(name=self.image)
                         if not images:
-                            #pull the image if it doesn't exist
+                            #pull the image if it doesn't exist, then fall through and create the container in the same request
                             pull_result = self.pull_image()
                             logging.info(f"Pulled image for {self.name}: {pull_result}")
-                            return f"Pulled image for {self.name}: {pull_result}"
+                            if not self.client.images.list(name=self.image):
+                                return f"Failed to pull image for {self.name}: {pull_result}"
 
                         # Now safe to run
                         self.client.containers.run(
