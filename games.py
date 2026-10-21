@@ -254,21 +254,54 @@ class GameServer:
 
     def _build_volumes(self) -> Dict[str, Dict[str, str]]:
         """
-        Build a docker-py compatible volumes dict.
-        Accepts:
-          - self.volume as a string -> host path mounted to the same path inside container
-          - self.volume as dict -> {"host": "/host/path", "container": "/container/path"}
-          - self.mods as dict -> {"host_mod_path": "/host/path", "container_mod_path": "/container/path"}
-        Ensures host directories exist (os.makedirs(..., exist_ok=True)) to avoid Docker creating unexpected dirs.
+        Build a docker-py compatible volumes dict under the host path in self.volume.
+          - If the image declares VOLUMEs, bind each one to the matching subdirectory of the host path
+            (relative to the image's WorkingDir when it sits under it, e.g. Palworld's /opt/palworld/Pal/Saved -> <host>/Pal/Saved).
+          - Otherwise bind the whole host path over the image's WorkingDir.
+        Mounting over a WorkingDir that holds the game install (Palworld) hides it, so declared volumes win.
+        Ensures host directories exist (os.makedirs(..., exist_ok=True)) to avoid Docker creating them as root.
         """
         vols: Dict[str, Dict[str, str]] = {}
-        
-        host_base = self.volume
-        container_base = self._get_image_working_dir()
-        host_base_abs = os.path.abspath(host_base)
-        os.makedirs(host_base_abs, exist_ok=True)
-        vols[host_base_abs] = {"bind": container_base, "mode": "rw"}
+
+        host_base_abs = os.path.abspath(self.volume)
+        work_dir = self._get_image_working_dir()
+        declared = self._get_image_volumes()
+        if not declared:
+            declared = [work_dir]
+        uid = self._get_image_uid()
+        for container_path in declared:
+            rel = os.path.relpath(container_path, work_dir)
+            if rel.startswith(".."):
+                rel = container_path.lstrip("/")
+            host_path = os.path.normpath(os.path.join(host_base_abs, rel))
+            os.makedirs(host_path, exist_ok=True)
+            # Images that run as a non-root user can't write to a fresh root-owned bind mount, so hand empty dirs to that user.
+            if uid and not os.listdir(host_path):
+                os.chown(host_path, uid, uid)
+            vols[host_path] = {"bind": container_path, "mode": "rw"}
+            logging.info(f"{self.name}: mounting {host_path} at {container_path}")
         return vols
+
+    def _get_image_volumes(self) -> List[str]:
+        try:
+            return sorted((self.client.images.get(self.image).attrs['Config'].get('Volumes') or {}).keys())
+        except Exception as e:
+            logging.error(f"Couldn't read declared volumes of {self.image}: {e}")
+            return []
+
+    def _get_image_uid(self) -> int:
+        # The image's USER as a numeric uid (0 when it runs as root or can't be resolved).
+        try:
+            user = (self.client.images.get(self.image).attrs['Config'].get('User') or "").split(":")[0]
+            if not user or user == "root":
+                return 0
+            if user.isdigit():
+                return int(user)
+            out = self.client.containers.run(self.image, entrypoint=["id", "-u", user], remove=True)
+            return int(out.decode().strip())
+        except Exception as e:
+            logging.error(f"Couldn't resolve the user of {self.image}: {e}")
+            return 0
 
     def _get_image_working_dir(self) -> str:
         try:
